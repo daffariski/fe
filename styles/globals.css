@@ -1,0 +1,232 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ebf4fc;
+  --color-foreground: #575757;
+  --color-light-foreground: #9b9b9b;
+  --color-primary: oklch(37.2% 0.044 257.287);
+  --color-light-primary: oklch(86.9% 0.022 252.894);
+  --color-secondary: oklch(26.8% 0.007 34.298);
+  --color-light-secondary: oklch(55.3% 0.013 58.071);
+  --color-danger: #f3777a;
+  --color-light-danger: #fececf;
+  --color-warning: #f57e2c;
+  --color-light-warning: #ffd7bc;
+  --color-success: #69c9ca;
+  --color-light-success: #9af8f9;
+  --color-disable: #c4c3c3;
+  --color-light-disable: #f4f4f4;
+
+  --animate-intro-right: intro_right 0.2s ease-in-out;
+  @keyframes intro_right {
+    from {
+      transform: translateX(100);
+    }
+  }
+}
+
+body {
+  @apply bg-background text-foreground max-w-full overflow-x-hidden font-normal;
+}
+
+* {
+  @apply transition duration-75 border-foreground/30;
+}
+
+@layer base {
+}
+
+@layer components {
+  .button {
+    @apply whitespace-nowrap cursor-pointer disabled:!text-disable disabled:!bg-light-disable;
+    transform: scale(1);
+    filter: brightness(0.94);
+  }
+
+  .button:disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .button:hover {
+    /* transform: scale(1.02); */
+    filter: brightness(1);
+    /* box-shadow: 0 2px 5px 0 rgba(87, 87, 87, 0.15); */
+  }
+
+  .button:active {
+    transform: scale(1);
+    filter: brightness(0.9);
+    box-shadow: inset 0 0 5px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .button-loading {
+    border-radius: 50%;
+    display: inline-block;
+    border-top: 2.5px solid;
+    border-left: 2.5px solid;
+    border-right: 2.5px solid transparent;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+  }
+
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .input {
+    @apply px-4 py-2 rounded-[6px] text-foreground bg-background w-full transition duration-150 ease-in-out focus:outline-none border border-slate-300 placeholder:font-normal placeholder:text-light-foreground focus:!border-primary disabled:opacity-60;
+  }
+
+  .input-file {
+    @apply file:-mx-3 file:-my-1 file:cursor-pointer file:overflow-hidden file:rounded-md file:border-0 file:border-solid file:border-inherit file:[margin-inline-end:0.75rem] file:bg-slate-200 file:px-3 file:py-1 file:text-slate-500;
+  }
+
+  .input-label {
+    @apply select-none text-sm text-foreground;
+  }
+
+  .input-error {
+    @apply !border-light-danger bg-light-danger/20;
+  }
+
+  .input-icon {
+    @apply absolute top-1/2 -translate-y-1/2 text-light-foreground;
+  }
+
+  .input-error-message {
+    @apply text-xs text-danger;
+  }
+
+  .input-tip {
+    @apply text-xs text-light-foreground;
+  }
+
+  .input-suggest-container {
+    @apply py-2 rounded-lg absolute left-0 w-full bg-background shadow z-30 overflow-hidden ease-in-out max-h-[200px] overflow-y-auto;
+  }
+
+  .input-suggest {
+    @apply py-1 px-4 cursor-pointer w-full list-none text-foreground hover:text-primary;
+  }
+
+  .input-values-container {
+    @apply flex gap-2 flex-nowrap w-max;
+  }
+
+  .input-values-item {
+    @apply flex text-sm px-1 pl-2 justify-between bg-white text-foreground items-center rounded-[4px];
+  }
+
+  .input-values-delete {
+    @apply text-sm cursor-pointer pl-2 pr-1 py-1 hover:text-danger;
+  }
+
+  .input-scroll::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+
+  .input-scroll:hover::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  .input-scroll::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+
+  .input-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+
+  .input-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .modal {
+    @apply isolate fixed left-1/2 -translate-x-1/2 top-[1rem] md:top-[15vh] opacity-100 bg-white z-40;
+  }
+
+  .modal-header {
+    @apply flex justify-between items-center gap-8 px-4 pt-4;
+  }
+
+  .modal-footer {
+    @apply px-4 py-2.5 mt-4 bg-background rounded-b-[6px];
+  }
+
+  .floating-page {
+    @apply fixed top-[1rem] right-0 bg-background lg:top-0 h-screen z-40 border-t-4 md:border-t-0 md:border-l-4 !border-primary overflow-hidden;
+  }
+
+  .toast {
+    @apply isolate fixed right-5 bottom-5 opacity-100 bg-white z-40;
+  }
+
+  .modal-backdrop {
+    @apply isolate fixed left-0 top-0 z-40 w-screen h-screen bg-light-foreground/20 backdrop-blur-[1px];
+  }
+}
+
+@layer utilities {
+  .skeleton-loading {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skeleton-loading::after {
+    content: "";
+    @apply absolute w-full h-full top-0 left-0 z-10 rounded-[6px];
+    background: linear-gradient(100deg, #f4f8ff 10%, #fff 20%, #f4f8ff 35%);
+    background-size: 200% 100%;
+    animation: 2s loading ease-out infinite;
+  }
+
+  @keyframes loading {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
+  body::-webkit-scrollbar,
+  .scroll::-webkit-scrollbar {
+    @apply w-[10px] h-[10px];
+  }
+
+  .scroll-sm::-webkit-scrollbar {
+    @apply w-[7px] h-[7px];
+  }
+
+  .scroll-lg::-webkit-scrollbar {
+    @apply w-[14px] h-[14px];
+  }
+
+  body::-webkit-scrollbar-thumb,
+  .scroll::-webkit-scrollbar-thumb,
+  .scroll-sm::-webkit-scrollbar-thumb,
+  .scroll-lg::-webkit-scrollbar-thumb {
+    @apply bg-light-primary/60 cursor-pointer rounded-[3px];
+  }
+
+  body::-webkit-scrollbar-thumb:hover,
+  .scroll:hover::-webkit-scrollbar-thumb:hover,
+  .scroll-sm:hover::-webkit-scrollbar-thumb:hover,
+  .scroll-lg:hover::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary;
+  }
+
+  .scroll-none::-webkit-scrollbar {
+    @apply w-0 h-0;
+  }
+}
