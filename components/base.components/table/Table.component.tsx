@@ -11,30 +11,30 @@ import { ControlBarComponent, ControlBarOptionType, PaginationComponent, Paginat
 type CT = "controller-bar" | "head-column" | "column" | "row" | "floating-action" | "base";
 
 export interface TableColumnType {
-  selector    :  string;
-  label       :  string;
-  width      ?:  string;
-  sortable   ?:  boolean;
-  className  ?:  string;
-  item       ?:  (data: any) => string | ReactNode;
+  selector: string;
+  label: string;
+  width?: string;
+  sortable?: boolean;
+  className?: string;
+  item?: (data: any) => string | ReactNode;
 };
 
 export interface TableProps {
-  controlBar                ?:  false | ControlBarOptionType[];
+  controlBar?: false | ControlBarOptionType[];
 
-  columns                    :  TableColumnType[];
-  data                       :  object[];
-  pagination                ?:  PaginationProps;
+  columns: TableColumnType[];
+  data: object[];
+  pagination?: PaginationProps;
 
-  loading                   ?:  boolean;
-  sortBy                    ?:  { column: string; direction: "asc" | "desc" };
-  onChangeSortBy            ?:  ({ column, direction } : { column: string; direction: "asc" | "desc"; }) => void;
-  search                    ?:  string;
-  onChangeSearch            ?:  (search: string) => void;
-  searchableColumn          ?:  string[];
-  onChangeSearchableColumn  ?:  (column: string) => void;
-  onRowClick                ?:  (data: object, key: number) => void;
-  onRefresh                 ?:  () => void;
+  loading?: boolean;
+  sortBy?: { column: string; direction: "asc" | "desc" };
+  onChangeSortBy?: ({ column, direction }: { column: string; direction: "asc" | "desc"; }) => void;
+  search?: string;
+  onChangeSearch?: (search: string) => void;
+  searchableColumn?: string[];
+  onChangeSearchableColumn?: (column: string) => void;
+  onRowClick?: (data: object, key: number) => void;
+  onRefresh?: () => void;
 
   /** Use custom class with: "controller-bar::", "head-column::", "column::", "floating-action::", "row::". */
   className?: string;
@@ -87,7 +87,7 @@ export function TableComponent({
   }, [keywordSearch]);
 
   const columnMapping = useMemo(() => {
-    return ( columns?.filter((column) => displayColumns.includes(column.selector)) || []);
+    return (columns?.filter((column) => displayColumns.includes(column.selector)) || []);
   }, [columns, displayColumns]);
 
   function numberOfRow(key: number) {
@@ -96,15 +96,15 @@ export function TableComponent({
   }
 
   const styles = {
-    head            :  "px-4 py-2.5 font-bold w-full flex justify-between gap-2 items-center text-sm text-foreground capitalize",
-    column          :  cn("px-4 py-2 font-medium", pcn<CT>(className, "column")),
-    row             :  "flex items-center gap-4 rounded-[6px] relative animate-intro-right border-b",
-    floatingAction  :  cn("sticky bg-background -right-5 z-10 cursor-pointer flex items-center shadow rounded-l-lg", pcn<CT>(className, "floating-action")),
+    head: "px-4 py-2.5 font-bold w-full flex justify-between gap-2 items-center text-sm text-foreground capitalize",
+    column: cn("px-4 py-2 font-medium", pcn<CT>(className, "column")),
+    row: "flex items-center gap-4 rounded-[6px] relative animate-intro-right border-b",
+    floatingAction: cn("sticky bg-background -right-5 z-10 cursor-pointer flex items-center shadow rounded-l-lg", pcn<CT>(className, "floating-action")),
   };
 
   function renderItem(item: object) {
     const itemMapping = columnMapping.map((column) =>
-        column?.item ? column?.item(item) : 
+      column?.item ? column?.item(item) :
         (typeof item[column.selector as keyof object] == "object"
           ? JSON.stringify(item[column.selector as keyof object])
           : item[column.selector as keyof object]) || "-"
@@ -153,7 +153,7 @@ export function TableComponent({
                   column: column.selector,
                   direction:
                     sortBy?.column == column.selector &&
-                    sortBy?.direction == "desc" ? "asc" : "desc",
+                      sortBy?.direction == "desc" ? "asc" : "desc",
                 })
               }
             >
@@ -177,7 +177,7 @@ export function TableComponent({
   return (
     <div className={pcn<CT>(className, "base")}>
       {controlBar != false && (
-        <ControlBarComponent 
+        <ControlBarComponent
           options={!controlBar ? ["SEARCHABLE", "SEARCH", "SELECTABLE", "REFRESH"] : controlBar}
           onSearchable={(e) => onChangeSearchableColumn?.(String(e))}
           searchable={searchableColumn || []}
@@ -198,7 +198,7 @@ export function TableComponent({
               e.scrollLeft &&
               setShowFloatingAction(
                 e.scrollLeft + e.clientWidth <=
-                  e.scrollWidth - actionColumnRef.current?.clientWidth
+                e.scrollWidth - actionColumnRef.current?.clientWidth
               );
           }}
         >
@@ -289,7 +289,7 @@ export function TableComponent({
                             styles.row,
                             key % 2 ? "bg-white/40" : "bg-white",
                             onRowClick &&
-                              "cursor-pointer hover:bg-light-primary/40",
+                            "cursor-pointer hover:bg-light-primary/40",
                             pcn<CT>(className, "row")
                           )}
                           key={key}
@@ -311,7 +311,7 @@ export function TableComponent({
                                 className={styles.floatingAction}
                                 onClick={() =>
                                   floatingActionActive !== false &&
-                                  floatingActionActive == key
+                                    floatingActionActive == key
                                     ? setFloatingActionActive(false)
                                     : setFloatingActionActive(key)
                                 }
@@ -320,7 +320,7 @@ export function TableComponent({
                                   <FontAwesomeIcon
                                     icon={
                                       floatingActionActive === false ||
-                                      floatingActionActive != key
+                                        floatingActionActive != key
                                         ? faChevronLeft
                                         : faChevronRight
                                     }
@@ -328,12 +328,11 @@ export function TableComponent({
                                 </div>
 
                                 <div
-                                  className={`py-1 flex gap-2 ${
-                                    floatingActionActive !== false &&
-                                    floatingActionActive == key
+                                  className={`py-1 flex gap-2 ${floatingActionActive !== false &&
+                                      floatingActionActive == key
                                       ? "w-max pl-2 pr-8"
                                       : "w-0"
-                                  }`}
+                                    }`}
                                 >
                                   {item["action" as keyof object]}
                                 </div>

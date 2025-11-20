@@ -8,7 +8,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { CardComponent, InputComponent, PaginationComponent } from "@/components/base.components";
 
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -29,7 +28,7 @@ export default function Index() {
       // filter: filter,
     },
   });
- const router = useRouter();
+  const router = useRouter();
   const { id } = router.query;
 
   return (
@@ -90,7 +89,7 @@ export default function Index() {
           <section className="container w-screen mx-auto justify-center gap-4 pt-5 flex flex-wrap ">
             {!loading &&
               code !== 500 &&
-              data.data.map((item:any, key:number) => {
+              data?.data?.map((item: any, key: number) => {
                 return (
                   <CardComponent
                     key={key}

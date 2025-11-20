@@ -3,25 +3,25 @@ import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextInterface {
-  registerToken     :  string | null;
-  setRegisterToken  :  (token: string | null) => void;
-  accessToken       :  string | null;
-  setAccessToken    :  (token: string | null) => void;
-  user              :  Record<string, any> | null;
-  setUser           :  (user: Record<string, any> | null) => void;
+  registerToken: string | null;
+  setRegisterToken: (token: string | null) => void;
+  accessToken: string | null;
+  setAccessToken: (token: string | null) => void;
+  user: Record<string, any> | null;
+  setUser: (user: Record<string, any> | null) => void;
 }
 
 const AuthContext = createContext<AuthContextInterface | undefined>(undefined);
 
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [accessToken, setAccessToken]      =  useState<string | null>(null);
-  const [registerToken, setRegisterToken]  =  useState<string | null>(null);
-  const [user, setUser]                    =  useState<Record<string, any> | null>(null);
- const router = useRouter();
-  const set_access_token =  (token: string | null) => {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [registerToken, setRegisterToken] = useState<string | null>(null);
+  const [user, setUser] = useState<Record<string, any> | null>(null);
+  const router = useRouter();
+  const set_access_token = (token: string | null) => {
     setAccessToken(token);
 
-    if(token) {
+    if (token) {
       auth.setAccessToken(token)
     } else {
       auth.deleteAccessToken()
@@ -29,19 +29,19 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }
 
   const fetchUser = async () => {
-    const fetch = await api({path: "me"});
+    const fetch = await api({ path: "me" });
     setUser(fetch?.data)
   }
 
   useEffect(() => {
     const token = auth.getAccessToken() || null;
-    
+
     setAccessToken(token)
 
-    if(router.asPath !=='/' && !router.asPath.includes('login')){
+    if (token && router.asPath !== '/' && !router.asPath.includes('login')) {
       fetchUser()
     }
-  }, []);
+  }, [router.asPath]);
 
   return (
     <AuthContext.Provider value={{

@@ -7,7 +7,7 @@ import { auth, cavity } from "@/utils";
 // ## Build auth bearer
 // =========================>
 export const authBearer = (bearer?: string): string | null => {
-  const token  =  bearer || auth.getAccessToken() || null;
+  const token = bearer || auth.getAccessToken() || null;
   return token ? `Bearer ${token}` : null;
 };
 
@@ -25,46 +25,46 @@ const handleErrors = (fetch: AxiosResponse) => {
 // =========================>
 export type ApiFilterType = {
   /** Use filter type with: "eq" = Equal, "ne" = Not Equal, "in" = In, "ni" = Not In, "bw" = Between. */
-  type    ?:  "eq" | "ne" | "in" | "ni" | "bw";
-  column  ?:  string;
-  value   ?:  string | string[];
+  type?: "eq" | "ne" | "in" | "ni" | "bw";
+  column?: string;
+  value?: string | string[];
 };
 
 // =========================>
 // ## Type of api params
 // =========================>
 export type ApiParamsType = {
-  paginate       ?:  number;
-  page           ?:  number;
-  sortBy         ?:  string;
-  sortDirection  ?:  string;
-  search         ?:  string;
-  filter         ?:  ApiFilterType[];
+  paginate?: number;
+  page?: number;
+  sortBy?: string;
+  sortDirection?: string;
+  search?: string;
+  filter?: ApiFilterType[];
 };
 
 // =========================>
 // ## Type of api props
 // =========================>
 export type ApiType = {
-  path           ?:  string;
-  url            ?:  string;
-  method         ?:  "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS";
-  params         ?:  ApiParamsType;
-  payload        ?:  any;
-  includeParams  ?:  object;
-  headers        ?:  object;
-  bearer         ?:  string;
+  path?: string;
+  url?: string;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS";
+  params?: ApiParamsType;
+  payload?: any;
+  includeParams?: object;
+  headers?: object;
+  bearer?: string;
 };
 
 // =========================>
 // ## Api filter value
 // =========================>
 export const ApiFilterValue = {
-  eq  :  "eq",
-  ne  :  "ne",
-  in  :  "in",
-  ni  :  "ni",
-  bw  :  "bw",
+  eq: "eq",
+  ne: "ne",
+  in: "in",
+  ni: "ni",
+  bw: "bw",
 };
 
 
@@ -82,14 +82,15 @@ export const api = async ({
   headers,
   bearer,
 }: ApiType) => {
-  const fetchUrl                              =  url ? url: `${process.env.NEXT_PUBLIC_API_HOST}/${path || ""}`;
-  
-  const buildHeaders: Record<string, string>  =  {Authorization: authBearer(bearer) || "", ...headers};
+  console.log("🚀 ~ api ~ params:", params)
+  const fetchUrl = url ? url : `${process.env.NEXT_PUBLIC_API_HOST}/${path || ""}`;
 
-  buildHeaders["Content-Type"]                =  buildHeaders["Content-Type"] || "multipart/form-data";
-  
-  const filter: Record<string, any>           =  {};
-  
+  const buildHeaders: Record<string, string> = { Authorization: authBearer(bearer) || "", ...headers };
+
+  buildHeaders["Content-Type"] = buildHeaders["Content-Type"] || "multipart/form-data";
+
+  const filter: Record<string, any> = {};
+
   if (params?.filter) {
     params?.filter?.map((val) => {
       filter[val.column as keyof object] = `${ApiFilterValue[val.type as keyof object]}:${Array.isArray(val.value) ? val.value.join(",") : val.value}`;
@@ -98,15 +99,15 @@ export const api = async ({
   console.log(process.env.NEXT_PUBLIC_API_HOST);
 
   return await axios(fetchUrl, {
-      method   :  method || "GET",
-      headers  :  buildHeaders,
-      data     :  payload,
-      params   : {
-        ...params,
-        ...includeParams,
-        ...(params?.filter ? { filter: JSON.stringify(filter)} : {})
-      },
-    })
+    method: method || "GET",
+    headers: buildHeaders,
+    data: payload,
+    params: {
+      ...params,
+      ...includeParams,
+      ...(params?.filter ? { filter: JSON.stringify(filter) } : {})
+    },
+  })
     .then((res) => res)
     .catch((err) => handleErrors(err.response));
 };
@@ -117,9 +118,9 @@ export const api = async ({
 // ## Hook of get api 
 // =========================>
 export const useGetApi = (props: ApiType & { method?: "GET" | "OPTIONS", cacheName?: string; expired?: number }, sleep?: boolean) => {
-  const [loading, setLoading]  =  useState<boolean>(true);
-  const [code, setCode]        =  useState<number | null>(null);
-  const [data, setData]        =  useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [code, setCode] = useState<number | null>(null);
+  const [data, setData] = useState<any | null>(null);
 
   const fetch = async (revalidation: boolean = false) => {
     setLoading(true);
@@ -135,8 +136,8 @@ export const useGetApi = (props: ApiType & { method?: "GET" | "OPTIONS", cacheNa
       setData(cacheData);
       return "";
     }
-      console.log(process.env.NEXT_PUBLIC_API_HOST);
-    
+    console.log(process.env.NEXT_PUBLIC_API_HOST);
+
     // =========================>
     // ## Fetch from api
     // =========================>
@@ -150,7 +151,7 @@ export const useGetApi = (props: ApiType & { method?: "GET" | "OPTIONS", cacheNa
       // =========================>
       // ## Save to cache
       // =========================>
-      if (props.expired) cavity.set({key: props?.cacheName || `fetch_${props?.path}`, data: response?.data, expired: props.expired});
+      if (props.expired) cavity.set({ key: props?.cacheName || `fetch_${props?.path}`, data: response?.data, expired: props.expired });
     }
 
   };

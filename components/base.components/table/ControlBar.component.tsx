@@ -9,26 +9,26 @@ import { IconButtonComponent, InputCheckboxComponent, InputComponent, SelectComp
 export type ControlBarOptionType = "SEARCH" | "SEARCHABLE" | "FILTER" | "SELECTABLE" | "REFRESH" | ReactNode;
 
 export interface ControlBarProps {
-  options            ?:  ControlBarOptionType[];
-  className          ?:  string
-  search             ?:  string,
-  onSearch           ?:  (searchable: string) => void,
-  searchableOptions  ?:  {label: string, selector: string}[]
-  searchable         ?:  string[],
-  onSearchable       ?:  (searchable: string[]) => void,
-  selectableOptions  ?:  {label: string, selector: string}[]
-  selectable         ?:  string[],
-  onSelectable       ?:  (searchable: string[]) => void,
-  onRefresh          ?:  () => void,
+  options?: ControlBarOptionType[];
+  className?: string
+  search?: string,
+  onSearch?: (searchable: string) => void,
+  searchableOptions?: { label: string, selector: string }[]
+  searchable?: string[],
+  onSearchable?: (searchable: string[]) => void,
+  selectableOptions?: { label: string, selector: string }[]
+  selectable?: string[],
+  onSelectable?: (searchable: string[]) => void,
+  onRefresh?: () => void,
 }
 
 
 
 export function ControlBarComponent({
-  options, 
-  className, 
-  search, 
-  onSearch, 
+  options,
+  className,
+  search,
+  onSearch,
   searchableOptions,
   searchable,
   onSearchable,
@@ -37,7 +37,7 @@ export function ControlBarComponent({
   onSelectable,
   onRefresh
 }: ControlBarProps) {
-  const {toggle, setToggle} = useToggleContext()
+  const { toggle, setToggle } = useToggleContext()
 
   return (
     <>

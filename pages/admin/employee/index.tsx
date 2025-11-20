@@ -8,9 +8,18 @@ export default function Index() {
     <TableSupervisionComponent
       title={"Pegawai"}
       fetchControl={{
-        path: "users",
+        path: "admin/users",
+        params: {
+          filter: [{
+            type: 'ne',
+            column: 'role',
+            value: 'customer',
+          }],
+          sortBy: 'role',
+          sortDirection: 'asc',
+        }
       }}
-    
+
       columnControl={[
         {
           selector: "name",
@@ -24,20 +33,29 @@ export default function Index() {
           sortable: true,
           item: (item) => item.email,
         },
+        {
+          selector: "role",
+          label: "Role",
+          sortable: true,
+          item: (item) => item.role,
+        },
       ]}
       formControl={{
-        payload:(values)=>{return{
-          name:values.name,
-          email:values.email,
-          role:values.role,
-        }},
-        contentType:'application/json',
+        payload: (values) => {
+          return {
+            name: values.name,
+            email: values.email,
+            role: values.role,
+            password: values.password,
+          }
+        },
+        contentType: 'application/json',
         forms: [
           {
             construction: {
               name: "name",
               label: "Nama",
-              placeholder: "Ketikan nama pengguna...",
+              placeholder: "Nama pegawai...",
               required: true,
             },
           },
@@ -46,17 +64,37 @@ export default function Index() {
               type: "email",
               name: "email",
               label: "Email",
-              placeholder: "Ketikan Email pengguna...",
+              placeholder: "Email pegawai...",
               required: true,
             },
           },
           {
-            type:'select',
+            construction: {
+              type: "password",
+              name: "password",
+              label: "Password",
+              placeholder: "Password baru...",
+              required: true,
+            },
+            visibility: "create", // required only when creating new employee
+          },
+          {
+            construction: {
+              type: "password",
+              name: "password",
+              label: "Password (opsional, isi untuk mengubah password lama)",
+              placeholder: "Password baru...",
+              required: false,
+            },
+            visibility: "update", // optional when updating
+          },
+          {
+            type: 'select',
             construction: {
               name: "role",
               label: "Role",
               placeholder: "Pilih Role...",
-              options:[{label:'Admin',value:'admin'},{label:'Teknisi',value:'mechanic'}],
+              options: [{ label: 'Admin', value: 'admin' }, { label: 'Teknisi', value: 'mechanic' }],
               required: true,
             },
           },

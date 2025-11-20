@@ -14,37 +14,35 @@ import Cookies from "js-cookie";
 import { cn, pcn, token_cookie_name } from "@utils/.";
 import { ButtonComponent } from "../button/Button.component";
 
-
-
 type CT = "backdrop" | "base" | "head-item" | "item" | "child-item";
 
 export interface SidebarItemProps {
-  label          :  string;
-  key           ?:  number;
-  leftContent   ?:  any;
-  rightContent  ?:  any;
-  path          ?:  string;
-  items         ?:  SidebarItemProps[];
-  className     ?:  string;
+  label: string;
+  key?: number;
+  leftContent?: any;
+  rightContent?: any;
+  path?: string;
+  items?: SidebarItemProps[];
+  className?: string;
 };
 
 export interface SidebarHeadItemProps {
-  label       :  string;
-  collapse   ?:  boolean;
-  items      ?:  SidebarItemProps[];
-  className  ?:  string;
+  label: string;
+  collapse?: boolean;
+  items?: SidebarItemProps[];
+  className?: string;
 };
 
 export interface sidebarProps {
-  head            ?:  any;
-  items           ?:  SidebarHeadItemProps[];
-  basePath        ?:  string;
-  show            ?:  boolean;
-  toggle          ?:  boolean;
-  onToggleChange  ?:  () => void;
-  children        ?:  any;
-  hasAccess       ?:  number[];
-  onChange        ?:  () => void;
+  head?: any;
+  items?: SidebarHeadItemProps[];
+  basePath?: string;
+  show?: boolean;
+  toggle?: boolean;
+  onToggleChange?: () => void;
+  children?: any;
+  hasAccess?: number[];
+  onChange?: () => void;
 
   /** Use custom class with: "backdrop::", "head-item::", "item::", "child-item::". */
   className?: string;
@@ -99,9 +97,12 @@ export function SidebarComponent({
   // onChange,
   // hasAccess,
   className = "",
-} : sidebarProps) {
-  const router             =  useRouter();
-  const [shows, setShows]  =  useState<string[]>([]);
+}: sidebarProps) {
+  const router = useRouter();
+  const [shows, setShows] = useState<string[]>([]);
+  
+  // Dummy user data for now
+  const user = { name: "Admin" };
 
   const setShow = (key: string) => {
     setShows((prevShows) =>
@@ -224,8 +225,8 @@ export function SidebarComponent({
                               className={cn(
                                 styles.item,
                                 menu?.path &&
-                                  cekActive(menu?.path || "") &&
-                                  "text-primary border-l-2 border-primary pl-4",
+                                cekActive(menu?.path || "") &&
+                                "text-primary border-l-2 border-primary pl-4",
                                 pcn<CT>(className, "item"),
                                 menu?.className
                               )}
@@ -247,11 +248,10 @@ export function SidebarComponent({
                                 {menu?.items?.length && (
                                   <FontAwesomeIcon
                                     icon={faChevronUp}
-                                    className={`text-sm ${
-                                      checkShow(
-                                        `${menu_head_key}.${menu_key}`
-                                      ) || "rotate-180"
-                                    }`}
+                                    className={`text-sm ${checkShow(
+                                      `${menu_head_key}.${menu_key}`
+                                    ) || "rotate-180"
+                                      }`}
                                   />
                                 )}
                               </div>
@@ -283,8 +283,8 @@ export function SidebarComponent({
                                           className={cn(
                                             styles.childItem,
                                             child?.path &&
-                                              cekActive(child?.path || "") &&
-                                              "text-primary border-primary pl-4",
+                                            cekActive(child?.path || "") &&
+                                            "text-primary border-primary pl-4",
                                             pcn<CT>(className, "child-item"),
                                             child?.className
                                           )}
@@ -306,11 +306,10 @@ export function SidebarComponent({
                                             {child?.items?.length && (
                                               <FontAwesomeIcon
                                                 icon={faChevronUp}
-                                                className={`block text-sm ${
-                                                  checkShow(
-                                                    `${menu_head_key}.${menu_key}`
-                                                  ) || "rotate-180"
-                                                }`}
+                                                className={`block text-sm ${checkShow(
+                                                  `${menu_head_key}.${menu_key}`
+                                                ) || "rotate-180"
+                                                  }`}
                                               />
                                             )}
                                           </div>
@@ -332,9 +331,13 @@ export function SidebarComponent({
         <div className="min-h-[100px] p-4 space-y-2 ">
           <div className="flex gap-4 items-center shadow p-4">
             <div className="bg-slate-100 border h-10 aspect-square rounded-full flex justify-center items-center">
-              <p className=" font-semibold">AN</p>
+              <p className=" font-semibold">
+                {user?.name?.substring(0, 2).toUpperCase() || "AN"}
+              </p>
             </div>
-            <p className={cn(!toggle && "hidden")}>ADMIN</p>
+            <p className={cn(!toggle && "hidden")}>
+              {user?.name || "Admin"}
+            </p>
           </div>
           <ButtonComponent
             className="text-red-500 font-semibold"

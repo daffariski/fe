@@ -9,14 +9,14 @@ export default function Index() {
     <TableSupervisionComponent
       title={"Suku Cadang"}
       fetchControl={{
-        path: "products",
+        path: "admin/products",
       }}
       columnControl={[
         {
           selector: "name",
           label: "Nama",
           sortable: true,
-          width:'400px',
+          width: '400px',
           item: (item) => item.name,
         },
         {
@@ -32,23 +32,23 @@ export default function Index() {
           sortable: true,
           item: (item) => <p>
             {conversion.currency(item?.price)}
-            /{item.uom||'-'}
-          </p> 
+            /{item.uom || '-'}
+          </p>
         },
         {
           selector: "series",
-          label: "Deskripsi",
-          
+          label: "Series",
+
           item: (item) => <p className="text-sm w-full text-ellipsis">{item.series}</p>,
         },
       ]}
-      formControl={{ 
+      formControl={{
         forms: [
           {
             construction: {
               name: "name",
               label: "Nama",
-              placeholder: "Ketikan nama suku cadang...",
+              placeholder: "nama suku cadang...",
               required: true,
             },
           },
@@ -57,7 +57,7 @@ export default function Index() {
             construction: {
               name: "price",
               label: "Harga",
-              placeholder: "Ketikan nama suku cadang...",
+              placeholder: "harga suku cadang...",
               required: true,
             },
           },
@@ -84,10 +84,10 @@ export default function Index() {
               ],
             },
           },
-          {   
+          {
             construction: {
               name: "series",
-              label: "Seris",
+              label: "Series",
               placeholder: "cont. Supra X 125",
               required: true,
             },

@@ -7,41 +7,41 @@ import { FloatingPageComponent, FloatingPageProps, ButtonComponent, IconButtonCo
 
 
 export interface TableSupervisionColumnProps {
-  selector         :  string;
-  label           ?:  string;
-  width           ?:  string;
-  sortable        ?:  boolean;
-  item            ?:  (data: any) => string | ReactNode;
-  permissionCode  ?:  string;
+  selector: string;
+  label?: string;
+  width?: string;
+  sortable?: boolean;
+  item?: (data: any) => string | ReactNode;
+  permissionCode?: string;
 };
 
 export interface TableSupervisionFormProps {
-  forms                :  string[] | (FormType & { visibility?: "*" | "create" | "update" })[];
-  customDefaultValue  ?:  object;
-  payload             ?:  (values: any) => object;
-  modalControl        ?:  FloatingPageProps;
-  contentType         ?:  "application/json" | "multipart/form-data";
+  forms: string[] | (FormType & { visibility?: "*" | "create" | "update" })[];
+  customDefaultValue?: object | ((data: any) => object);
+  payload?: (values: any) => object;
+  modalControl?: FloatingPageProps;
+  contentType?: "application/json" | "multipart/form-data";
 };
 
 export type TableSupervisionProps = {
-  title           ?:  string;
-  fetchControl     :  ApiType;
-  setToRefresh    ?:  boolean;
-  refreshOnClose  ?:  boolean;
-  setToLoading    ?:  boolean;
-  headBar         ?:  any;
-  columnControl   ?:  string[] | TableSupervisionColumnProps[];
-  formControl     ?:  TableSupervisionFormProps;
-  permissionCode  ?:  number;
-  searchable      ?:  boolean;
-  customDetail    ?:  (data: object) => any;
-  actionControl   ?:  boolean | (
+  title?: string;
+  fetchControl: ApiType;
+  setToRefresh?: boolean;
+  refreshOnClose?: boolean;
+  setToLoading?: boolean;
+  headBar?: any;
+  columnControl?: string[] | TableSupervisionColumnProps[];
+  formControl?: TableSupervisionFormProps;
+  permissionCode?: number;
+  searchable?: boolean;
+  customDetail?: (data: object) => any;
+  actionControl?: boolean | (
     | string
     | ((
-        row              :  object,
-        setModal         :  (type: "form" | "delete" | "show") => void,
-        setDataSelected  :  () => void
-      ) => ReactNode[])
+      row: object,
+      setModal: (type: "form" | "delete" | "show") => void,
+      setDataSelected: () => void
+    ) => ReactNode[])
   )[];
 };
 
@@ -54,25 +54,25 @@ export function TableSupervisionComponent({
   actionControl,
   setToRefresh
 }: TableSupervisionProps) {
-  const router    =  useRouter();
-  const { isSm }  =  useResponsive();
+  const router = useRouter();
+  const { isSm } = useResponsive();
   const {
-    page              :  pageParams,
-    paginate          :  paginateParams,
-    search            :  searchParams,
-    "sort.direction"  :  sortDirectionParams,
-    "sort.column"     :  sortColumnParams,
+    page: pageParams,
+    paginate: paginateParams,
+    search: searchParams,
+    "sort.direction": sortDirectionParams,
+    "sort.column": sortColumnParams,
   } = router.query;
 
-  const [paginate, setPaginate]  =  useState(10);
-  const [page, setPage]          =  useState(1);
-  const [sort, setSort]          =  useState<{ column: string; direction: "desc" | "asc"; }>({ column: "created_at", direction: "desc" });
-  const [search, setSearch]      =  useState<string>("");
+  const [paginate, setPaginate] = useState(10);
+  const [page, setPage] = useState(1);
+  const [sort, setSort] = useState<{ column: string; direction: "desc" | "asc"; }>({ column: "created_at", direction: "desc" });
+  const [search, setSearch] = useState<string>("");
   // const [searchColumn, setSearchColumn] = useState<string>("");
   // const [filter, setFilter] = useState<GetFilterType[]>([]);
 
-  const [modal, setModal]                =  useState<"form" | "delete" | "show" | null>(null);
-  const [dataSelected, setDataSelected]  =  useState<object | null>(null);
+  const [modal, setModal] = useState<"form" | "delete" | "show" | null>(null);
+  const [dataSelected, setDataSelected] = useState<object | null>(null);
 
   // ============================
   // ## fetching
@@ -80,22 +80,22 @@ export function TableSupervisionComponent({
   const { loading, data, reset } = useGetApi(
     {
       ...fetchControl,
-      method  :  "GET",
-      params  :  {
+      method: "GET",
+      params: {
+        ...fetchControl.params,
         page,
         paginate,
-        sortBy         :  sort.column,
-        sortDirection  :  sort.direction,
-        search         :  search,
-        // filter: filter,
+        sortBy: sort.column,
+        sortDirection: sort.direction,
+        search: search,
       },
     },
     setToLoading
   );
 
-useEffect(() => {
-  reset()
-}, [setToRefresh]);
+  useEffect(() => {
+    reset()
+  }, [setToRefresh]);
 
   useEffect(() => {
     // if (!unUrlPage) {
@@ -132,24 +132,24 @@ useEffect(() => {
   const columns = useMemo(() => {
     return columnControl?.length
       ? columnControl.map((col) => {
-          if (typeof col === "string") {
-            return {
-              selector: col,
-              label: col,
-            };
-          } else {
-            return {
-              ...col,
-            };
-          }
-        })
+        if (typeof col === "string") {
+          return {
+            selector: col,
+            label: col,
+          };
+        } else {
+          return {
+            ...col,
+          };
+        }
+      })
       : data?.columns || data?.data?.at(0)
         ? Object.keys(data.data[0]).map((col) => {
-            return {
-              selector: col,
-              label: col,
-            };
-          })
+          return {
+            selector: col,
+            label: col,
+          };
+        })
         : [];
   }, [columnControl, data]);
 
@@ -162,51 +162,51 @@ useEffect(() => {
         ...row,
         action: (actionControl !== false ||
           (Array.isArray(actionControl) && actionControl?.length)) && (
-          <div className="flex items-center gap-2">
-            {/* custom action */}
-            {Array.isArray(actionControl) &&
-              actionControl
-                ?.filter((ac) => typeof ac === "function")
-                .map((ac) => ac(row, setModal, () => setDataSelected(row)))}
-            {/* edit action */}
-            {(!Array.isArray(actionControl) ||
-              actionControl
-                ?.filter((ac) => typeof ac === "string")
-                .includes("edit")) && (
-              <ButtonComponent
-                icon={faEdit}
-                label={"Ubah"}
-                variant="outline"
-                paint="warning"
-                size={"xs"}
-                rounded
-                onClick={() => {
-                  setModal("form");
-                  setDataSelected(row);
-                }}
-              />
-            )}
-            {/* delete action */}
-            {(!Array.isArray(actionControl) ||
-              actionControl
-                ?.filter((ac) => typeof ac === "string")
-                .includes("delete")) && (
-              <ButtonComponent
-                icon={faTrash}
-                label={"Hapus"}
-                variant="outline"
-                paint="danger"
-                size={"xs"}
-                rounded
-                onClick={() => {
-                  setModal("delete");
-                  setDataSelected(row);
-                }}
-              />
-            )}
-            
-          </div>
-        ),
+            <div className="flex items-center gap-2">
+              {/* custom action */}
+              {Array.isArray(actionControl) &&
+                actionControl
+                  ?.filter((ac) => typeof ac === "function")
+                  .map((ac) => ac(row, setModal, () => setDataSelected(row)))}
+              {/* edit action */}
+              {(!Array.isArray(actionControl) ||
+                actionControl
+                  ?.filter((ac) => typeof ac === "string")
+                  .includes("edit")) && (
+                  <ButtonComponent
+                    icon={faEdit}
+                    label={"Ubah"}
+                    variant="outline"
+                    paint="warning"
+                    size={"xs"}
+                    rounded
+                    onClick={() => {
+                      setModal("form");
+                      setDataSelected(row);
+                    }}
+                  />
+                )}
+              {/* delete action */}
+              {(!Array.isArray(actionControl) ||
+                actionControl
+                  ?.filter((ac) => typeof ac === "string")
+                  .includes("delete")) && (
+                  <ButtonComponent
+                    icon={faTrash}
+                    label={"Hapus"}
+                    variant="outline"
+                    paint="danger"
+                    size={"xs"}
+                    rounded
+                    onClick={() => {
+                      setModal("delete");
+                      setDataSelected(row);
+                    }}
+                  />
+                )}
+
+            </div>
+          ),
       };
     });
   }, [actionControl, data]);
@@ -215,50 +215,59 @@ useEffect(() => {
   // ## form preparation
   // ============================
   const forms = useMemo(() => {
+    const isUpdate = dataSelected !== null;
+    const mode = isUpdate ? "update" : "create";
+
     return formControl?.forms?.length
-      ? formControl?.forms.map((form) => {
+      ? formControl?.forms
+        .filter((form) => {
+          if (typeof form === "string") return true;
+          const visibility = form.visibility;
+          if (!visibility || visibility === "*") return true;
+          return visibility === mode;
+        })
+        .map((form) => {
           return typeof form === "string"
             ? {
-                col: 12,
-                type: "text",
-                construction: {
-                  name: form,
-                  label: form,
-                },
-              }
-            : {
-                ...form,
-              };
-        })
-      : data?.forms ||
-          data?.columns ||
-          columnControl?.map((col) => {
-            return {
               col: 12,
               type: "text",
               construction: {
-                name: typeof col == "string" ? col : col?.selector,
-                label: typeof col == "string" ? col : col?.label,
-                placeholder: `Masukkan ${
-                  typeof col == "string" ? col : col?.label
-                }...`,
+                name: form,
+                label: form,
               },
+            }
+            : {
+              ...form,
             };
-          }) ||
-          (data?.data?.at(0)
-            ? Object.keys(data.data[0]).map((col) => {
-                return {
-                  col: 12,
-                  type: "text",
-                  construction: {
-                    name: col,
-                    label: col,
-                    placeholder: `Masukkan ${col}...`,
-                  },
-                };
-              })
-            : []);
-  }, [formControl, data]);
+        })
+      : data?.forms ||
+      data?.columns ||
+      columnControl?.map((col) => {
+        return {
+          col: 12,
+          type: "text",
+          construction: {
+            name: typeof col == "string" ? col : col?.selector,
+            label: typeof col == "string" ? col : col?.label,
+            placeholder: `Masukkan ${typeof col == "string" ? col : col?.label
+              }...`,
+          },
+        };
+      }) ||
+      (data?.data?.at(0)
+        ? Object.keys(data.data[0]).map((col) => {
+          return {
+            col: 12,
+            type: "text",
+            construction: {
+              name: col,
+              label: col,
+              placeholder: `Masukkan ${col}...`,
+            },
+          };
+        })
+        : []);
+  }, [formControl, data, dataSelected]);
 
   return (
     <>
@@ -272,7 +281,7 @@ useEffect(() => {
           totalRow: data?.total_row,
           page: page,
           paginate: paginate,
-          onChange: (_, pageSize,page,) => {
+          onChange: (_, pageSize, page,) => {
             setPage(page);
             setPaginate(pageSize);
           },
@@ -283,22 +292,22 @@ useEffect(() => {
         }
         search={search}
         onChangeSearch={(e) => setSearch(e)}
-        onRefresh={() => {}}
-        onRowClick={() => {}}
+        onRefresh={() => { }}
+        onRowClick={() => { }}
         controlBar={[
           ...(!isSm
             ? [
-                <div className="pl-2 pr-4 mr-2 border-r" key="button-add">
-                  <ButtonComponent
-                    icon={faPlus}
-                    label="Tambah Data"
-                    size="sm"
-                    onClick={() => setModal("form")}
-                  />
-                </div>
-              ]
+              <div className="pl-2 pr-4 mr-2 border-r" key="button-add">
+                <ButtonComponent
+                  icon={faPlus}
+                  label="Tambah Data"
+                  size="sm"
+                  onClick={() => setModal("form")}
+                />
+              </div>
+            ]
             : []),
-          "SEARCH", "SELECTABLE", "REFRESH",
+          "SEARCH"
         ]}
       />
 
@@ -311,7 +320,7 @@ useEffect(() => {
 
       <FloatingPageComponent
         show={modal === "form"}
-        onClose={() => {setModal(null); setDataSelected(null)}}
+        onClose={() => { setModal(null); setDataSelected(null) }}
         title={
           dataSelected === null
             ? 'Tambah ' + title + ' Baru'
@@ -321,12 +330,21 @@ useEffect(() => {
       >
         <div className="p-4">
           <FormSupervisionComponent
-            defaultValue={dataSelected?dataSelected:formControl?.customDefaultValue}
+            defaultValue={
+              dataSelected 
+                ? (typeof formControl?.customDefaultValue === 'function' 
+                    ? formControl.customDefaultValue(dataSelected) 
+                    : dataSelected)
+                : formControl?.customDefaultValue
+            }
             forms={forms as FormType[]}
-            submitControl={fetchControl.path ? 
-              { path: `${fetchControl.path}/${(dataSelected as { id: number })?.id || ""}`,method:`${dataSelected?'PUT':'POST'}`,headers:{'Content-Type':formControl?.contentType}} 
-            : 
-              { url: `${fetchControl.url}/${(dataSelected as { id: number })?.id || ""}`,method:`${dataSelected?'PUT':'POST'}`}
+            submitControl={fetchControl.path ?
+              // { path: `${fetchControl.path}/${(dataSelected as { id: number })?.id || ""}`, method: `${dataSelected ? 'POST' : 'POST'}`, headers: { 'Content-Type': formControl?.contentType } }
+              // :
+              // { url: `${fetchControl.url}/${(dataSelected as { id: number })?.id || ""}`, method: `${dataSelected ? 'POST' : 'POST'}`, headers: { 'Content-Type': formControl?.contentType } }
+              { path: `${fetchControl.path}/${(dataSelected as { id: number })?.id || ""}`, method: 'POST', headers: { 'Content-Type': formControl?.contentType } }
+              :
+              { url: `${fetchControl.url}/${(dataSelected as { id: number })?.id || ""}`, method: 'POST', headers: { 'Content-Type': formControl?.contentType } }
             }
             payload={formControl?.payload}
             onSuccess={() => {
@@ -346,15 +364,16 @@ useEffect(() => {
         submitControl={{
           onSubmit: {
             method: "DELETE",
-            ...(fetchControl.path ? 
-              {path: `${fetchControl.path}/${(dataSelected as { id: number })?.id || ""}`} 
-            : 
-              {url: `${fetchControl.url}/${(dataSelected as { id: number })?.id || ""}`}
+            ...(fetchControl.path ?
+              { path: `${fetchControl.path}/${(dataSelected as { id: number })?.id || ""}` }
+              :
+              { url: `${fetchControl.url}/${(dataSelected as { id: number })?.id || ""}` }
             ),
           },
           onSuccess: () => {
             reset();
             setModal(null);
+            setDataSelected(null);
           },
         }}
       >
