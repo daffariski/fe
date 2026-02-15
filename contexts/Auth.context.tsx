@@ -29,19 +29,44 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }
 
   const fetchUser = async () => {
-    const fetch = await api({ path: "me" });
-    setUser(fetch?.data)
+    try {
+      const fetch = await api({ path: "me" });
+      
+      if (fetch?.status === 200 && fetch?.data) {
+        setUser(fetch?.data);
+        return true;
+      } else if (fetch?.status === 401) {
+        // Token is invalid, clear auth and redirect
+        console.log('401 Unauthorized - clearing auth and redirecting to login');
+        auth.deleteAccessToken();
+        setAccessToken(null);
+        setUser(null);
+        router.push('/login');
+        return false;
+      }
+    } catch (error: any) {
+      // On error, clear auth and redirect to login
+      console.log('Error fetching user - clearing auth:', error?.message || error);
+      auth.deleteAccessToken();
+      setAccessToken(null);
+      setUser(null);
+      if (!router.pathname.includes('login') && !router.pathname.includes('register')) {
+        router.push('/login');
+      }
+      return false;
+    }
   }
 
   useEffect(() => {
     const token = auth.getAccessToken() || null;
+    setAccessToken(token);
 
-    setAccessToken(token)
-
-    if (token && router.asPath !== '/' && !router.asPath.includes('login')) {
-      fetchUser()
+    // Only fetch user on initial mount if we have token but no user
+    // Don't fetch on route changes to avoid race conditions
+    if (token && !user && !router.pathname.includes('login') && !router.pathname.includes('register')) {
+      fetchUser();
     }
-  }, [router.asPath]);
+  }, []); // Empty dependency array - only run once on mount
 
   return (
     <AuthContext.Provider value={{

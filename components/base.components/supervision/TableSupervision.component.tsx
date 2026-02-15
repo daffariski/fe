@@ -5,7 +5,6 @@ import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { ApiType, useGetApi, useResponsive } from "@utils/.";
 import { FloatingPageComponent, FloatingPageProps, ButtonComponent, IconButtonComponent, TableColumnType, TableComponent, FormSupervisionComponent, FormType, ModalConfirmComponent } from "@components/.";
 
-
 export interface TableSupervisionColumnProps {
   selector: string;
   label?: string;
@@ -43,6 +42,7 @@ export type TableSupervisionProps = {
       setDataSelected: () => void
     ) => ReactNode[])
   )[];
+  showAddButton?: boolean;
 };
 
 export function TableSupervisionComponent({
@@ -52,7 +52,8 @@ export function TableSupervisionComponent({
   columnControl,
   formControl,
   actionControl,
-  setToRefresh
+  setToRefresh,
+  showAddButton = true
 }: TableSupervisionProps) {
   const router = useRouter();
   const { isSm } = useResponsive();
@@ -295,7 +296,7 @@ export function TableSupervisionComponent({
         onRefresh={() => { }}
         onRowClick={() => { }}
         controlBar={[
-          ...(!isSm
+          ...(!isSm && showAddButton
             ? [
               <div className="pl-2 pr-4 mr-2 border-r" key="button-add">
                 <ButtonComponent
@@ -311,12 +312,14 @@ export function TableSupervisionComponent({
         ]}
       />
 
-      <IconButtonComponent
-        icon={faPlus}
-        className="fixed bottom-4 right-4 w-12 h-12 z-20 lg:hidden"
-        size="lg"
-        onClick={() => setModal("form")}
-      />
+      {showAddButton && (
+        <IconButtonComponent
+          icon={faPlus}
+          className="fixed bottom-4 right-4 w-12 h-12 z-20 lg:hidden"
+          size="lg"
+          onClick={() => setModal("form")}
+        />
+      )}
 
       <FloatingPageComponent
         show={modal === "form"}
@@ -331,20 +334,35 @@ export function TableSupervisionComponent({
         <div className="p-4">
           <FormSupervisionComponent
             defaultValue={
-              dataSelected 
-                ? (typeof formControl?.customDefaultValue === 'function' 
-                    ? formControl.customDefaultValue(dataSelected) 
-                    : dataSelected)
+              dataSelected
+                ? (typeof formControl?.customDefaultValue === 'function'
+                  ? formControl.customDefaultValue(dataSelected)
+                  : dataSelected)
                 : formControl?.customDefaultValue
             }
             forms={forms as FormType[]}
-            submitControl={fetchControl.path ?
-              // { path: `${fetchControl.path}/${(dataSelected as { id: number })?.id || ""}`, method: `${dataSelected ? 'POST' : 'POST'}`, headers: { 'Content-Type': formControl?.contentType } }
-              // :
-              // { url: `${fetchControl.url}/${(dataSelected as { id: number })?.id || ""}`, method: `${dataSelected ? 'POST' : 'POST'}`, headers: { 'Content-Type': formControl?.contentType } }
-              { path: `${fetchControl.path}/${(dataSelected as { id: number })?.id || ""}`, method: 'POST', headers: { 'Content-Type': formControl?.contentType } }
-              :
-              { url: `${fetchControl.url}/${(dataSelected as { id: number })?.id || ""}`, method: 'POST', headers: { 'Content-Type': formControl?.contentType } }
+            submitControl={
+              fetchControl.path
+                ? {
+                  path: `${fetchControl.path}${dataSelected ? `/${(dataSelected as { id: number })?.id}` : ""
+                    }`,
+                  method: dataSelected
+                    ? formControl?.contentType === "application/json"
+                      ? "PUT"
+                      : "POST"
+                    : "POST", // Always POST for create
+                  headers: { "Content-Type": formControl?.contentType },
+                }
+                : {
+                  url: `${fetchControl.url}${dataSelected ? `/${(dataSelected as { id: number })?.id}` : ""
+                    }`,
+                  method: dataSelected
+                    ? formControl?.contentType === "application/json"
+                      ? "PUT"
+                      : "POST"
+                    : "POST",
+                  headers: { "Content-Type": formControl?.contentType },
+                }
             }
             payload={formControl?.payload}
             onSuccess={() => {

@@ -4,3 +4,4 @@
 
 export * from "./example";
 export * from "./VehicleList.component";
+export { default as ServiceDetailModal } from "./ServiceDetail.modal";

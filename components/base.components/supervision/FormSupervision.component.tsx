@@ -45,62 +45,64 @@ type formCustomConstructionProps = ({
   errors,
   setErrors,
 }: {
-  formControl  ?:  (name: string) => any;
-  values       ?:  { name: string; value?: any }[];
-  setValues    ?:  (values: FormValueType[]) => void;
-  errors       ?:  FormErrorType[];
-  setErrors    ?:  (errors: FormErrorType[]) => void;
-  setRegister  ?:  (registers: FormRegisterType) => void;
+  formControl?: (name: string) => any;
+  values?: { name: string; value?: any }[];
+  setValues?: (values: FormValueType[]) => void;
+  errors?: FormErrorType[];
+  setErrors?: (errors: FormErrorType[]) => void;
+  setRegister?: (registers: FormRegisterType) => void;
 }) => ReactNode;
 
 type ClusterConstruction = {
-  name       :  string;
-  label      :  string;
-  tip        :  string;
-  forms      :  FormType[];
-  wrap       :  boolean;
-  className  :  string;
+  name: string;
+  label: string;
+  tip: string;
+  forms: FormType[];
+  wrap: boolean;
+  className: string;
 };
 
 type ConstructionMap = {
-  default           :  InputProps;
-  text              :  TextareaPropsType;
-  check             :  InputCheckboxProps;
-  currency          :  InputCurrencyProps;
-  date              :  InputDateProps;
-  datetime          :  InputDateTimeProps;
-  time              :  InputTimeProps;
-  image             :  InputImageProps;
-  cluster           :  ClusterConstruction;
-  number            :  InputNumberProps;
-  radio             :  InputRadioProps;
-  select            :  SelectProps;
-  "enter-password"  :  InputPasswordProps;
-  otp               :  InputOtpProps;
-  custom            :  formCustomConstructionProps;
+  default: InputProps;
+  text: TextareaPropsType;
+  check: InputCheckboxProps;
+  currency: InputCurrencyProps;
+  date: InputDateProps;
+  datetime: InputDateTimeProps;
+  time: InputTimeProps;
+  image: InputImageProps;
+  cluster: ClusterConstruction;
+  number: InputNumberProps;
+  radio: InputRadioProps;
+  select: SelectProps;
+  "enter-password": InputPasswordProps;
+  otp: InputOtpProps;
+  custom: formCustomConstructionProps;
 };
 
 type TypeKeys = keyof ConstructionMap;
 
 export interface FormType<T extends TypeKeys = keyof ConstructionMap> {
-  col           ?:  1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | string;
-  className     ?:  string;
-  construction  ?:  ConstructionMap[T];
-  type          ?:  T;
-  onHide        ?:  (values: any) => boolean;
+  col?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | string;
+  className?: string;
+  construction?: ConstructionMap[T];
+  type?: T;
+  onHide?: (values: any) => boolean;
 }
 
 export interface formSupervisionProps {
-  title          ?:  string;
-  forms           :  FormType[];
-  confirmation   ?:  boolean;
-  defaultValue   ?:  object | null;
-  payload        ?:  (values: any) => object;
-  submitControl   :  ApiType;
-  footerControl  ?:  ({ loading }: { loading: boolean }) => ReactNode;
-  onSuccess      ?:  (data: any) => void;
-  onError        ?:  (code: number) => void;
-  className      ?:  string;
+  title?: string;
+  forms: FormType[];
+  confirmation?: boolean;
+  defaultValue?: object | null;
+  payload?: (values: any) => object;
+  submitControl: ApiType;
+  footerControl?: ({ loading }: { loading: boolean }) => ReactNode;
+  onSuccess?: (data: any) => void;
+  onError?: (code: number) => void;
+  className?: string;
+  successMessage?: string;
+  errorMessage?: string;
 }
 
 
@@ -116,10 +118,12 @@ export function FormSupervisionComponent({
   footerControl,
   payload,
   className = "",
+  successMessage = "Data berhasil disimpan!",
+  errorMessage = "Data gagal disimpan, cek data dan koneksi internet lalu coba kembali!"
 }: formSupervisionProps) {
-  const [modal, setModal]          =  useState<boolean | "success" | "failed">(false);
-  const [fresh, setFresh]          =  useState<boolean>(true);
-  const [mapGroups, setMapGroups]  =  useState<Record<string, number[]>>({});
+  const [modal, setModal] = useState<boolean | "success" | "failed">(false);
+  const [fresh, setFresh] = useState<boolean>(true);
+  const [mapGroups, setMapGroups] = useState<Record<string, number[]>>({});
 
   const [
     {
@@ -170,21 +174,21 @@ export function FormSupervisionComponent({
   const generateColClass = (col: string | number) => String(col).split(" ").map((c) => (c.includes(":") ? `${c.replace(":", ":col-span-")}` : `col-span-${c}`)).join(" ");
 
   const inputMap: Record<TypeKeys, React.FC<any>> = {
-    default           :  InputComponent,
-    text              :  TextareaComponent,
-    check             :  InputCheckboxComponent,
-    currency          :  InputCurrencyComponent,
-    date              :  InputDateComponent,
-    datetime          :  InputDatetimeComponent,
-    time              :  InputTimeComponent,
-    number            :  InputNumberComponent,
-    radio             :  InputRadioComponent,
-    select            :  SelectComponent,
-    "enter-password"  :  InputPasswordComponent,
-    otp               :  InputOtpComponent,
-    image             :  InputComponent,
-    cluster           :  () => null,
-    custom            :  () => null,
+    default: InputComponent,
+    text: TextareaComponent,
+    check: InputCheckboxComponent,
+    currency: InputCurrencyComponent,
+    date: InputDateComponent,
+    datetime: InputDatetimeComponent,
+    time: InputTimeComponent,
+    number: InputNumberComponent,
+    radio: InputRadioComponent,
+    select: SelectComponent,
+    "enter-password": InputPasswordComponent,
+    otp: InputOtpComponent,
+    image: InputComponent,
+    cluster: () => null,
+    custom: () => null,
   };
 
   const renderInput = (form: FormType, key: number, prefix?: string) => {
@@ -323,9 +327,7 @@ export function FormSupervisionComponent({
         title="Gagal"
         className="!border-danger header::text-danger"
       >
-        <p className="px-3 pb-2 text-sm">
-          Data gagal disimpan, cek data dan koneksi internet lalu coba kembali!
-        </p>
+        <p className="px-3 pb-2 text-sm">{errorMessage}</p>
       </ToastComponent>
 
       <ToastComponent
@@ -334,7 +336,7 @@ export function FormSupervisionComponent({
         title="Berhasil"
         className="!border-success header::text-success"
       >
-        <p className="px-3 pb-2 text-sm">Data berhasil disimpan!</p>
+        <p className="px-3 pb-2 text-sm">{successMessage}</p>
       </ToastComponent>
     </>
   );

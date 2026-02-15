@@ -35,7 +35,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                   YUDHA MOTOR
                 </a>
                 <p className="text-sm -mt-1 font-semibold text-slate-400">
-                  Sistem Antrian Digital
+                  Sistem Manajemen Bengkel
                 </p>
               </div>
             }
@@ -46,6 +46,10 @@ export default function Layout({ children }: { children: ReactNode }) {
                   {
                     label: "Dashboard",
                     path: "/dashboard",
+                  },
+                  {
+                    label: "Antrian",
+                    path: "/queue",
                   },
                   {
                     label: "Servis",
@@ -71,6 +75,15 @@ export default function Layout({ children }: { children: ReactNode }) {
                   {
                     label: "Pelanggan",
                     path: "/customer",
+                  },
+                ],
+              },
+              {
+                label: "Laporan",
+                items: [
+                  {
+                    label: "Riwayat Sesi Toko",
+                    path: "/shop-sessions",
                   },
                 ],
               },

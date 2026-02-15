@@ -22,7 +22,7 @@ export const VehicleListComponent: React.FC<VehicleListComponentProps> = ({
 }) => {
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-4">Your Vehicles</h2>
+      <h2 className="text-xl font-semibold mb-4">Kendaraan Anda</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {loading
           ? [1, 2].map((_, key) => (

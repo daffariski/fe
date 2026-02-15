@@ -43,6 +43,7 @@ export default function Index() {
         },
       ]}
       formControl={{
+        contentType: "application/json",
         forms: [
           {
             construction: {

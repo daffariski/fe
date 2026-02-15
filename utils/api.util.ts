@@ -15,7 +15,13 @@ export const authBearer = (bearer?: string): string | null => {
 // ## Api error handler
 // =========================>
 const handleErrors = (fetch: AxiosResponse) => {
-  if (fetch?.status === 401) Router.push(auth.PATH_LOGIN);
+  if (fetch?.status === 401) {
+    // Clear auth state on unauthorized
+    auth.deleteAccessToken();
+    if (!Router.pathname.includes('/login')) {
+      Router.push('/login');
+    }
+  }
   if (fetch?.status === 403) Router.push(auth.PATH_BASE);
   return fetch;
 };
@@ -136,7 +142,6 @@ export const useGetApi = (props: ApiType & { method?: "GET" | "OPTIONS", cacheNa
       setData(cacheData);
       return "";
     }
-    console.log(process.env.NEXT_PUBLIC_API_HOST);
 
     // =========================>
     // ## Fetch from api

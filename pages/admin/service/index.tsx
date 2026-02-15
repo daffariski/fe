@@ -7,18 +7,18 @@ import {
   ModalComponent,
   TableSupervisionComponent,
 } from "@/components/base.components";
+import { ServiceDetailModal } from "@/components/construct.components";
 import { conversion, useGetApi } from "@/utils";
-import { faSave, faUserGear, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { title } from "process";
+import { faSave, faUserGear, faXmark, faEye } from "@fortawesome/free-solid-svg-icons";
 
 export default function Index() {
   const { user } = useAuthContext();
   const [modal, setModal] = useState({ title: "", id: "" });
   const [refresh, setRefresh] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
 
-
-
-  const { loading, code, data, reset } = useGetApi({
+  const { loading, code, data, } = useGetApi({
     path: "options/vehicle",
     method: "GET",
   });
@@ -32,14 +32,13 @@ export default function Index() {
     method: "GET",
   });
 
-  console.log(modal);
   return (
     <>
       <TableSupervisionComponent
         title={"Servis"}
         setToRefresh={refresh}
         fetchControl={{
-          path: "services",
+          path: "admin/services",
         }}
         columnControl={[
           {
@@ -231,6 +230,24 @@ export default function Index() {
             return (
               <>
                 <ButtonComponent
+                  label="Detail"
+                  variant="outline"
+                  paint="info"
+                  onClick={() => {
+                    setSelectedServiceId(row?.id);
+                    setShowDetailModal(true);
+                  }}
+                  icon={faEye}
+                  size="xs"
+                  rounded
+                />
+              </>
+            );
+          },
+          (row) => {
+            return (
+              <>
+                <ButtonComponent
                   label="Pilih Terknisi"
                   variant="outline"
                   paint="secondary"
@@ -263,7 +280,7 @@ export default function Index() {
         ]}
       />
       <ModalComponent
-        title={modal.title == "approve" ? "Setujui Order Online?" : "Tolak Order Online"}
+        title={modal.title == "approve" ? "Setujui Service?" : "Tolak Service?"}
         show={Boolean(modal.title)}
         onClose={() => setModal({ title: "", id: "" })}
       >
@@ -272,18 +289,18 @@ export default function Index() {
           submitControl={
             modal.title == "approve"
               ? {
-                  path: `services/${modal?.id}/approve`,
-                  method: "PATCH",
-                  headers: { "Content-Type": "application/json" },
-                }
+                path: `services/${modal?.id}/approve`,
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+              }
               : {
-                  path: `services/${modal?.id}/reject`,
-                  method: "PATCH",
-                  headers: { "Content-Type": "application/json" },
-                }
+                path: `services/${modal?.id}/reject`,
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+              }
           }
-          onSuccess={()=>{setModal({title:'',id:''});setRefresh(!refresh)}}
-          forms={modal.title=='approve'?[
+          onSuccess={() => { setModal({ title: '', id: '' }); setRefresh(!refresh) }}
+          forms={modal.title == 'approve' ? [
             {
               type: "select",
               construction: {
@@ -293,31 +310,42 @@ export default function Index() {
                 disabled: mechanicLoading,
               },
             },
-          ]:[]}
+          ] : []}
           footerControl={({ loading }) => (
-              <>
-                <div className="flex justify-end mt-4 gap-2">
-                  <ButtonComponent
-                    type="button"
-                    onClick={() => setModal("")}
-                    label="Batal"
-                    icon={faXmark}
-                    loading={loading}
-                    variant="outline"
-                    paint="danger"
-                  />
-                  <ButtonComponent
-                    type="submit"
-                    label={modal.title=='aprove'?'Simpan':'Tolak'}
-                    icon={faSave}
-                    loading={loading}
-                    paint="primary"
-                  />
-                </div>
-              </>
-            )}
+            <>
+              <div className="flex justify-end mt-4 gap-2">
+                <ButtonComponent
+                  type="button"
+                  onClick={() => setModal("")}
+                  label="Batal"
+                  icon={faXmark}
+                  loading={loading}
+                  variant="outline"
+                  paint="danger"
+                />
+                <ButtonComponent
+                  type="submit"
+                  label={modal.title == 'aprove' ? 'Simpan' : 'Tolak'}
+                  icon={faSave}
+                  loading={loading}
+                  paint="primary"
+                />
+              </div>
+            </>
+          )}
         />
       </ModalComponent>
+
+      {/* Service Detail Modal */}
+      <ServiceDetailModal
+        show={showDetailModal}
+        serviceId={selectedServiceId}
+        onClose={() => {
+          setShowDetailModal(false);
+          setSelectedServiceId(null);
+        }}
+        onRefresh={() => setRefresh(!refresh)}
+      />
     </>
   );
 }

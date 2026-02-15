@@ -68,7 +68,10 @@ export default function Login() {
       </h1>
       <p className="text-sm font-semibold mt-6">Masuk Dengan Email Terdaftar</p>
       {errorLogin && (
-        <p className="text-sm font-semibold mt-6">{errorLogin}</p>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-2 text-sm" role="alert">
+          {errorLogin}
+        </div>
+        // <p className="text-sm font-semibold mt-6">{errorLogin}</p>
       )}
 
       <CardComponent className="mt-4 p-6 w-[400px] rounded-2xl">
@@ -86,6 +89,8 @@ export default function Login() {
             }
           }}
           footerControl={renderFooter}
+          successMessage="Login berhasil! Mengalihkan..."
+          errorMessage="Login gagal, silakan coba lagi"
         />
       </CardComponent>
     </div>

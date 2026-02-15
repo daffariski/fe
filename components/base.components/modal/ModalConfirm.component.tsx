@@ -4,8 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { api, ApiType, cn, pcn } from "@utils/.";
 import { ToastComponent, ButtonComponent, ButtonProps } from "@components/.";
 
-
-
 type CT = "base" | "backdrop" | "header" | "footer";
 
 export interface ModalConfirmProps {
@@ -24,7 +22,6 @@ export interface ModalConfirmProps {
   /** Use custom class with: "backdrop::", "header::", "footer::". */
   className  ?:  string;
 };
-
 
 
 export function ModalConfirmComponent({
@@ -115,7 +112,7 @@ export function ModalConfirmComponent({
               } else {
                 const response = await api(submitControl?.onSubmit as ApiType);
 
-                if (response?.status == 200 || response?.status == 201) {
+                if ([200,201,202,203,204,205,206].includes(response?.status)) {
                   setToast("success");
                   submitControl?.onSuccess?.();
                   setLoading(false);
