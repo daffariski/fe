@@ -240,8 +240,9 @@ const UserProfilePage = () => {
         {floatPage && (
           <FormSupervisionComponent
             submitControl={{
-              path: `customer/${floatPage}${selectedVehicle?.id ? `/${selectedVehicle.id}` : ""
-                }`,
+              // path: `customer/${floatPage}${selectedVehicle?.id ? `/${selectedVehicle.id}` : ""
+              //   }`,
+              path: `customer/${floatPage}`,
               headers: { "Content-Type": "application/json" },
               method: selectedVehicle?.id ? "PATCH" : "POST",
             }}

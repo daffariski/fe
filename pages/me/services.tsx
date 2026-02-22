@@ -38,19 +38,19 @@ interface Service {
 }
 
 const ServiceHistoryPage = () => {
-  const router = useRouter();
-  const { user, accessToken } = useAuthContext();
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+    const router = useRouter();
+    const { user, accessToken } = useAuthContext();
+    const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  // Validate authentication
-  useEffect(() => {
-    if (!router.isReady) return;
-    
-    if (!accessToken) {
-      auth.deleteAccessToken();
-      router.push('/login');
-    }
-  }, [accessToken, router.isReady]);
+    // Validate authentication
+    useEffect(() => {
+        if (!router.isReady) return;
+
+        if (!accessToken) {
+            auth.deleteAccessToken();
+            router.push('/login');
+        }
+    }, [accessToken, router.isReady]);
 
     // Fetch customer's services
     const {
@@ -179,8 +179,8 @@ const ServiceHistoryPage = () => {
                                 key={filter.key}
                                 onClick={() => setStatusFilter(filter.key)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${statusFilter === filter.key
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                     }`}
                             >
                                 {filter.label} ({filter.count})

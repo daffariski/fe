@@ -17,6 +17,7 @@ import {
   faCheckCircle,
   faClock,
   faSpinner,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -75,7 +76,7 @@ export default function QueueManagement() {
     return badges[status] || badges.waiting;
   };
 
-  const statistics = statsData?.data?.[0] || {};
+  const statistics = statsData?.data || {};
   const queues = queuesData?.data || [];
 
   return (
@@ -102,66 +103,171 @@ export default function QueueManagement() {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <CardComponent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Antrian</p>
-                <p className="text-2xl font-bold">
-                  {statsLoading ? "-" : statistics.total_queues || 0}
-                </p>
-              </div>
-              <FontAwesomeIcon
-                icon={faClock}
-                className="text-3xl text-gray-400"
-              />
-            </div>
-          </CardComponent>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-gray-500">
+              Statistik Hari Ini &mdash;{" "}
+              <span className="text-gray-700">
+                {new Date().toLocaleDateString("id-ID", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
+            </p>
+            {!statsLoading && statistics.total_queues > 0 && (
+              <p className="text-xs text-gray-500">
+                {statistics.completed || 0} dari {statistics.total_queues} selesai
+              </p>
+            )}
+          </div>
 
-          <CardComponent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Menunggu</p>
-                <p className="text-2xl font-bold text-yellow-600">
-                  {statsLoading ? "-" : statistics.waiting || 0}
-                </p>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <CardComponent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Total</p>
+                  <p className="text-2xl font-bold">
+                    {statsLoading ? "-" : statistics.total_queues || 0}
+                  </p>
+                </div>
+                <FontAwesomeIcon
+                  icon={faClock}
+                  className="text-3xl text-gray-300"
+                />
               </div>
-              <FontAwesomeIcon
-                icon={faClock}
-                className="text-3xl text-yellow-400"
-              />
-            </div>
-          </CardComponent>
+            </CardComponent>
 
-          <CardComponent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Dikerjakan</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {statsLoading ? "-" : statistics.in_process || 0}
-                </p>
+            <CardComponent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Menunggu</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {statsLoading ? "-" : statistics.waiting || 0}
+                  </p>
+                </div>
+                <FontAwesomeIcon
+                  icon={faClock}
+                  className="text-3xl text-yellow-300"
+                />
               </div>
-              <FontAwesomeIcon
-                icon={faSpinner}
-                className="text-3xl text-blue-400"
-              />
-            </div>
-          </CardComponent>
+            </CardComponent>
 
-          <CardComponent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Selesai</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {statsLoading ? "-" : statistics.completed || 0}
-                </p>
+            <CardComponent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Dikerjakan</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {statsLoading ? "-" : statistics.in_process || 0}
+                  </p>
+                </div>
+                <FontAwesomeIcon
+                  icon={faSpinner}
+                  className="text-3xl text-blue-300"
+                />
               </div>
-              <FontAwesomeIcon
-                icon={faCheckCircle}
-                className="text-3xl text-green-400"
-              />
-            </div>
-          </CardComponent>
+            </CardComponent>
+
+            <CardComponent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Selesai</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {statsLoading ? "-" : statistics.completed || 0}
+                  </p>
+                </div>
+                <FontAwesomeIcon
+                  icon={faCheckCircle}
+                  className="text-3xl text-green-300"
+                />
+              </div>
+            </CardComponent>
+
+            <CardComponent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Dibatalkan</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {statsLoading ? "-" : statistics.cancelled || 0}
+                  </p>
+                </div>
+                <FontAwesomeIcon
+                  icon={faTimesCircle}
+                  className="text-3xl text-red-300"
+                />
+              </div>
+            </CardComponent>
+          </div>
+
+          {/* Progress bar */}
+          {!statsLoading && statistics.total_queues > 0 && (
+            <CardComponent className="p-4">
+              <div className="flex items-center justify-between text-sm mb-2">
+                <span className="font-medium text-gray-700">Progress Antrian Hari Ini</span>
+                <span className="text-gray-500">
+                  {Math.round(
+                    ((statistics.completed || 0) / statistics.total_queues) * 100
+                  )}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                <div className="h-3 rounded-full flex">
+                  {/* completed (green) */}
+                  {(statistics.completed || 0) > 0 && (
+                    <div
+                      className="bg-green-500 transition-all duration-500"
+                      style={{
+                        width: `${
+                          ((statistics.completed || 0) / statistics.total_queues) * 100
+                        }%`,
+                      }}
+                    />
+                  )}
+                  {/* in-process (blue) */}
+                  {(statistics.in_process || 0) > 0 && (
+                    <div
+                      className="bg-blue-400 transition-all duration-500"
+                      style={{
+                        width: `${
+                          ((statistics.in_process || 0) / statistics.total_queues) * 100
+                        }%`,
+                      }}
+                    />
+                  )}
+                  {/* cancelled (red) */}
+                  {(statistics.cancelled || 0) > 0 && (
+                    <div
+                      className="bg-red-400 transition-all duration-500"
+                      style={{
+                        width: `${
+                          ((statistics.cancelled || 0) / statistics.total_queues) * 100
+                        }%`,
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-4 mt-2 text-xs text-gray-500">
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-green-500" />
+                  Selesai ({statistics.completed || 0})
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-blue-400" />
+                  Dikerjakan ({statistics.in_process || 0})
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-yellow-400" />
+                  Menunggu ({statistics.waiting || 0})
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-400" />
+                  Dibatalkan ({statistics.cancelled || 0})
+                </span>
+              </div>
+            </CardComponent>
+          )}
         </div>
 
         {/* Current Queue Being Worked */}
