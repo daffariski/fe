@@ -147,9 +147,9 @@ export default function Index() {
         <hr class="divider"/>
         <table>
           <tbody>
-            <tr><td style="padding:4px 8px;color:#6b7280">Total Sparepart</td><td style="padding:4px 8px;text-align:right">${conversion.currency((s.total_price || 0) - (s.service_fee || 0))}</td></tr>
+            <tr><td style="padding:4px 8px;color:#6b7280">Total Sparepart</td><td style="padding:4px 8px;text-align:right">${conversion.currency((s.total_price || 0))}</td></tr>
             <tr><td style="padding:4px 8px;color:#6b7280">Biaya Jasa</td><td style="padding:4px 8px;text-align:right">${conversion.currency(s.service_fee || 0)}</td></tr>
-            <tr class="total-row"><td>TOTAL</td><td style="text-align:right">${conversion.currency(s.total_price || 0)}</td></tr>
+            <tr class="total-row"><td>TOTAL</td><td style="text-align:right">${conversion.currency((s.total_price || 0) + (s.service_fee || 0))}</td></tr>
           </tbody>
         </table>
         <hr class="divider"/>
@@ -606,7 +606,7 @@ export default function Index() {
         {payModal.service && (
           <>
             {/* Parts summary */}
-            <div className="px-5 pt-4 pb-2 bg-gray-50 border-b">
+            <div className="px-5 pt-4 pb-2 bg-gray-50 border-b max-h-[80vh] overflow-y-auto">
               <p className="text-sm text-gray-500 mb-1">
                 Kendaraan:{" "}
                 <span className="font-semibold text-gray-800">
