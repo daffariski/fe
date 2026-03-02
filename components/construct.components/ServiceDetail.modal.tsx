@@ -253,14 +253,29 @@ export default function ServiceDetailModal({
                       </tbody>
                       <tfoot className="bg-gray-50">
                         <tr>
-                          <td
-                            colSpan={3}
-                            className="px-4 py-3 text-right font-bold"
-                          >
-                            TOTAL
+                          <td colSpan={3} className="px-4 py-2 text-right text-sm text-gray-500">
+                            Total Sparepart
+                          </td>
+                          <td className="px-4 py-2 text-right text-sm text-gray-700">
+                            {conversion.currency(service.total_price || 0)}
+                          </td>
+                          {service.status === "process" && <td></td>}
+                        </tr>
+                        <tr>
+                          <td colSpan={3} className="px-4 py-2 text-right text-sm text-gray-500">
+                            Biaya Jasa
+                          </td>
+                          <td className="px-4 py-2 text-right text-sm text-gray-700">
+                            {service.service_fee ? conversion.currency(service.service_fee) : <span className="italic text-gray-400">Belum ditetapkan</span>}
+                          </td>
+                          {service.status === "process" && <td></td>}
+                        </tr>
+                        <tr className="border-t-2 border-gray-300">
+                          <td colSpan={3} className="px-4 py-3 text-right font-bold">
+                            GRAND TOTAL
                           </td>
                           <td className="px-4 py-3 text-right font-bold text-lg">
-                            {conversion.currency(service.price || 0)}
+                            {conversion.currency((service.total_price || 0) + (service.service_fee || 0))}
                           </td>
                           {service.status === "process" && <td></td>}
                         </tr>

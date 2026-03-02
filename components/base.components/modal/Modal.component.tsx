@@ -51,8 +51,9 @@ export function ModalComponent({
 
       <div
         className={cn(
-          "modal",
+          "modal overflow-y-auto",
           "w-[calc(100vw-2rem)] md:w-[50vw] max-w-[500px]",
+          "max-h-[calc(80vh-2rem)]",
           !show && "-translate-y-full opacity-0 scale-y-0",
           pcn<CT>(className, "base"),
         )}

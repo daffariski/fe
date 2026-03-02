@@ -8,8 +8,8 @@ import {
   TableSupervisionComponent,
 } from "@/components/base.components";
 import { ServiceDetailModal } from "@/components/construct.components";
-import { conversion, useGetApi, api } from "@/utils";
-import { faSave, faUserGear, faXmark, faEye, faPlus, faUser, faUsers, faClipboardCheck, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { conversion, useGetApi, api, ApiFilterType } from "@/utils";
+import { faSave, faUserGear, faXmark, faEye, faPlus, faUser, faUsers, faClipboardCheck, faArrowLeft, faMoneyBill, faPrint, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type ServiceType = "walk_in" | "on_behalf" | "historical";
@@ -20,6 +20,26 @@ export default function Index() {
   const [refresh, setRefresh] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [payModal, setPayModal] = useState<{ show: boolean; service: any }>({ show: false, service: null });
+  const [statusFilter, setStatusFilter] = useState<string>("");
+
+  const STATUS_FILTER_OPTIONS = [
+    { value: "",            label: "Semua Status" },
+    { value: "waiting",     label: "Menunggu" },
+    { value: "process",     label: "Dikerjakan" },
+    { value: "done_paid",   label: "Selesai (Lunas)" },
+    { value: "done_unpaid", label: "Selesai (Belum Dibayar)" },
+    { value: "cancelled",   label: "Dibatalkan" },
+  ];
+
+  const buildFilterParam = (key: string): ApiFilterType[] | undefined => {
+    if (!key) return undefined;
+    if (key === "done_paid")
+      return [{ type: "eq", column: "status", value: "done" }, { type: "eq", column: "payment_status", value: "paid" }];
+    if (key === "done_unpaid")
+      return [{ type: "eq", column: "status", value: "done" }, { type: "eq", column: "payment_status", value: "unpaid" }];
+    return [{ type: "eq", column: "status", value: key }];
+  };
 
   // Add Service modal state
   const [addModal, setAddModal] = useState<{ show: boolean; step: 1 | 2; type: ServiceType | null }>(
@@ -68,6 +88,84 @@ export default function Index() {
     closeAddModal();
     setRefresh((r) => !r);
   };
+
+  const printReceipt = async (serviceId: string) => {
+    try {
+      const result = await api({ path: `admin/services/${serviceId}/receipt`, method: "GET" });
+      const s = result?.data.data;
+      if (!s) return;
+
+      const partsRows = (s.details || [])
+        .map((d: any) => `
+          <tr>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb">${d.product?.name || d.description || "-"}</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;text-align:right">${d.qty ?? 1}x</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;text-align:right">${conversion.currency(d.price || 0)}</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #e5e7eb;text-align:right">${conversion.currency(d.total || d.total_price || 0)}</td>
+          </tr>`)
+        .join("");
+
+      const methodLabel: Record<string, string> = {
+        cash: "Tunai", transfer: "Transfer Bank / QRIS",
+      };
+
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
+        <title>Struk Servis #${s.queue?.queue_number || s.id}</title>
+        <style>
+          body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#111;font-size:14px}
+          h1{text-align:center;font-size:20px;margin:0 0 4px}
+          .subtitle{text-align:center;color:#6b7280;font-size:12px;margin-bottom:16px}
+          .divider{border:none;border-top:1px dashed #9ca3af;margin:12px 0}
+          table{width:100%;border-collapse:collapse}
+          th{background:#f3f4f6;text-align:left;padding:6px 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+          .total-row td{font-weight:bold;padding:8px;border-top:2px solid #111}
+          .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-bottom:12px}
+          .info-label{color:#6b7280;font-size:12px}
+          .info-val{font-size:13px;font-weight:600}
+          @media print{body{padding:8px}}
+        </style></head><body>
+        <h1>Yudha Motor</h1>
+        <p class="subtitle">Struk Servis Kendaraan</p>
+        <hr class="divider"/>
+        <div class="info-grid">
+          <div><div class="info-label">No. Antrian</div><div class="info-val">${s.queue?.queue_number || "-"}</div></div>
+          <div><div class="info-label">Tanggal</div><div class="info-val">${new Date(s.updated_at || s.created_at).toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"})}</div></div>
+          <div><div class="info-label">Pelanggan</div><div class="info-val">${s.customer?.user?.name || s.customer_name || "-"}</div></div>
+          <div><div class="info-label">Teknisi</div><div class="info-val">${s.mechanic?.user?.name || "-"}</div></div>
+          <div><div class="info-label">Kendaraan</div><div class="info-val">${s.vehicle?.plate_number || "-"}</div></div>
+          <div><div class="info-label">Tipe</div><div class="info-val">${s.vehicle?.brand || ""} ${s.vehicle?.series || ""}</div></div>
+        </div>
+        ${s.description ? `<p style="margin:4px 0 12px;font-size:13px;color:#374151"><b>Keluhan:</b> ${s.description}</p>` : ""}
+        <hr class="divider"/>
+        <table>
+          <thead><tr>
+            <th>Item/Sparepart</th><th style="text-align:right">Qty</th>
+            <th style="text-align:right">Harga</th><th style="text-align:right">Total</th>
+          </tr></thead>
+          <tbody>${partsRows || '<tr><td colspan="4" style="padding:8px;color:#9ca3af;text-align:center">Tidak ada sparepart</td></tr>'}</tbody>
+        </table>
+        <hr class="divider"/>
+        <table>
+          <tbody>
+            <tr><td style="padding:4px 8px;color:#6b7280">Total Sparepart</td><td style="padding:4px 8px;text-align:right">${conversion.currency((s.total_price || 0) - (s.service_fee || 0))}</td></tr>
+            <tr><td style="padding:4px 8px;color:#6b7280">Biaya Jasa</td><td style="padding:4px 8px;text-align:right">${conversion.currency(s.service_fee || 0)}</td></tr>
+            <tr class="total-row"><td>TOTAL</td><td style="text-align:right">${conversion.currency(s.total_price || 0)}</td></tr>
+          </tbody>
+        </table>
+        <hr class="divider"/>
+        <p style="margin:4px 0;font-size:13px"><b>Metode Pembayaran:</b> ${methodLabel[s.payment_method] || s.payment_method || "-"}</p>
+        <p style="text-align:center;margin-top:24px;color:#9ca3af;font-size:11px">Terima kasih atas kepercayaan Anda!</p>
+        <script>window.onload=function(){window.print();window.onafterprint=function(){window.close();}}</script>
+        </body></html>`;
+
+      const w = window.open("", "_blank", "width=600,height=800");
+      if (w) { w.document.write(html); w.document.close(); }
+    } catch {
+      // error silently
+    }
+  };
+
+  const filterParam = useMemo(() => buildFilterParam(statusFilter), [statusFilter]);
 
   const TYPE_CONFIG: { key: ServiceType; color: string; icon: any; label: string; subtitle: string; description: string }[] = [
     {
@@ -129,8 +227,17 @@ export default function Index() {
 
   return (
     <>
-      {/* ── Tambah Servis button ── */}
-      <div className="flex justify-end mb-2">
+      {/* ── Tambah Servis button + filter ── */}
+      <div className="flex justify-between items-center mb-2 gap-3">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          {STATUS_FILTER_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
         <ButtonComponent
           label="Tambah Servis"
           icon={faPlus}
@@ -145,6 +252,7 @@ export default function Index() {
         setToRefresh={refresh}
         fetchControl={{
           path: "admin/services",
+          params: { filter: filterParam },
         }}
         columnControl={[
           {
@@ -192,6 +300,21 @@ export default function Index() {
             label: "Tanggal",
             sortable: true,
             item: (data) => conversion.date(data?.created_at) || "-",
+          },
+          {
+            selector: "status",
+            label: "Status",
+            sortable: false,
+            item: (data: any) => {
+              const s = data?.status;
+              const p = data?.payment_status;
+              if (s === "waiting")   return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Menunggu</span>;
+              if (s === "process")   return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Dikerjakan</span>;
+              if (s === "cancelled") return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Dibatalkan</span>;
+              if (s === "done" && p === "paid")   return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Selesai</span>;
+              if (s === "done")       return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">Belum Dibayar</span>;
+              return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">{s || "-"}</span>;
+            },
           },
         ]}
         formControl={{
@@ -332,58 +455,77 @@ export default function Index() {
           ],
         }}
         actionControl={[
-          (row) => {
-            return (
-              <>
-                <ButtonComponent
-                  label="Detail"
-                  variant="outline"
-                  paint="info"
-                  onClick={() => {
-                    setSelectedServiceId(row?.id);
-                    setShowDetailModal(true);
-                  }}
-                  icon={faEye}
-                  size="xs"
-                  rounded
-                />
-              </>
-            );
-          },
-          (row) => {
-            return (
-              <>
-                <ButtonComponent
-                  label="Pilih Terknisi"
-                  variant="outline"
-                  paint="secondary"
-                  onClick={() => setModal({ title: "approve", id: row?.id })}
-                  icon={faUserGear}
-                  size="xs"
-                  rounded
-                  disabled={mechanicLoading}
-                />
-              </>
-            );
-          },
-          (row) => {
-            return (
-              <>
-                <ButtonComponent
-                  label="Batalkan"
-                  variant="outline"
-                  paint="danger"
-                  onClick={() => setModal({ title: "reject", id: row?.id })}
-                  icon={faXmark}
-                  size="xs"
-                  rounded
-                  disabled={mechanicLoading}
-                />
-              </>
-            );
-          },
-          "edit",
-        ]}
+          (row: any) => (
+            <ButtonComponent
+              label="Detail"
+              variant="outline"
+              paint="secondary"
+              onClick={() => {
+                setSelectedServiceId(row?.id);
+                setShowDetailModal(true);
+              }}
+              icon={faEye}
+              size="xs"
+              rounded
+            />
+          ) as any,
+          (row: any) => row?.mechanic_id ? null : (
+            <ButtonComponent
+              label="Pilih Terknisi"
+              variant="outline"
+              paint="secondary"
+              onClick={() => setModal({ title: "approve", id: row?.id })}
+              icon={faUserGear}
+              size="xs"
+              rounded
+              disabled={mechanicLoading}
+            />
+          ) as any,
+          (row: any) => row?.mechanic_id ? null : (
+            <ButtonComponent
+              label="Batalkan"
+              variant="outline"
+              paint="danger"
+              onClick={() => setModal({ title: "reject", id: row?.id })}
+              icon={faXmark}
+              size="xs"
+              rounded
+            />
+          ) as any,
+          ((row: any, setModalFn: any, setDataFn: any) => row?.mechanic_id ? null : (
+            <ButtonComponent
+              label="Ubah"
+              variant="outline"
+              paint="warning"
+              onClick={() => { setModalFn("form"); setDataFn(); }}
+              icon={faEdit}
+              size="xs"
+              rounded
+            />
+          )) as any,
+          (row: any) => (row?.status === "done" && row?.payment_status !== "paid") ? (
+            <ButtonComponent
+              label="Bayar"
+              variant="outline"
+              paint="success"
+              onClick={() => setPayModal({ show: true, service: row })}
+              icon={faMoneyBill}
+              size="xs"
+              rounded
+            />
+          ) : null as any,
+          (row: any) => row?.payment_status === "paid" ? (
+            <ButtonComponent
+              label="Cetak Struk"
+              variant="outline"
+              paint="primary"
+              onClick={() => printReceipt(row?.id)}
+              icon={faPrint}
+              size="xs"
+              rounded
+            />
+          ) : null as any,
+        ] as any[]}
       />
       <ModalComponent
         title={modal.title == "approve" ? "Setujui Service?" : "Tolak Service?"}
@@ -452,6 +594,104 @@ export default function Index() {
         }}
         onRefresh={() => setRefresh(!refresh)}
       />
+
+      {/* ══════════════════════════════════════════════════ */}
+      {/* Payment Modal                                      */}
+      {/* ══════════════════════════════════════════════════ */}
+      <ModalComponent
+        title="Finalisasi Pembayaran"
+        show={payModal.show}
+        onClose={() => setPayModal({ show: false, service: null })}
+      >
+        {payModal.service && (
+          <>
+            {/* Parts summary */}
+            <div className="px-5 pt-4 pb-2 bg-gray-50 border-b">
+              <p className="text-sm text-gray-500 mb-1">
+                Kendaraan:{" "}
+                <span className="font-semibold text-gray-800">
+                  {payModal.service?.vehicle?.plate_number || "-"}
+                </span>
+              </p>
+              <p className="text-sm text-gray-500">
+                Total Sparepart (saat ini):{" "}
+                <span className="font-semibold text-gray-800">
+                  {conversion.currency(payModal.service?.total_price || 0)}
+                </span>
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                * Grand total = total sparepart + biaya jasa yang Anda masukkan
+              </p>
+            </div>
+
+            <FormSupervisionComponent
+              key={payModal.service?.id}
+              className="p-5"
+              submitControl={{
+                path: `admin/services/${payModal.service?.id}/complete`,
+                method: "POST",
+              }}
+              onSuccess={() => {
+                setPayModal({ show: false, service: null });
+                setRefresh((r) => !r);
+              }}
+              forms={[
+                {
+                  type: "currency",
+                  construction: {
+                    name: "service_fee",
+                    label: "Biaya Jasa",
+                    placeholder: "Masukkan biaya jasa",
+                    required: true,
+                  },
+                },
+                {
+                  type: "select",
+                  construction: {
+                    name: "payment_method",
+                    label: "Metode Pembayaran",
+                    required: true,
+                    options: [
+                      { label: "Tunai (Cash)", value: "cash" },
+                      { label: "Transfer Bank/QRIS", value: "transfer" },
+                    ],
+                  },
+                },
+                {
+                  onHide: (values) => {
+                    const method = values.find((v: any) => v.name === "payment_method")?.value;
+                    return method === "cash" || !method;
+                  },
+                  type: "image",
+                  construction: {
+                    name: "payment_proof",
+                    label: "Bukti Pembayaran",
+                  },
+                },
+              ]}
+              footerControl={({ loading }) => (
+                <div className="flex justify-end gap-2 mt-4">
+                  <ButtonComponent
+                    type="button"
+                    label="Batal"
+                    icon={faXmark}
+                    variant="outline"
+                    paint="danger"
+                    onClick={() => setPayModal({ show: false, service: null })}
+                  />
+                  <ButtonComponent
+                    type="submit"
+                    label="Bayar & Selesaikan"
+                    icon={faMoneyBill}
+                    loading={loading}
+                    paint="success"
+                  />
+                </div>
+              )}
+            />
+          </>
+        )}
+      </ModalComponent>
 
       {/* ══════════════════════════════════════════════════ */}
       {/* Add Service Modal                                  */}

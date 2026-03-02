@@ -25,6 +25,7 @@ import {
   InputOtpProps,
   InputTimeProps,
   InputImageProps,
+  InputImageComponent,
   InputDateTimeProps,
   InputDatetimeComponent,
   InputTimeComponent,
@@ -186,7 +187,7 @@ export function FormSupervisionComponent({
     select: SelectComponent,
     "enter-password": InputPasswordComponent,
     otp: InputOtpComponent,
-    image: InputComponent,
+    image: InputImageComponent,
     cluster: () => null,
     custom: () => null,
   };

@@ -218,9 +218,8 @@ export default function QueueManagement() {
                     <div
                       className="bg-green-500 transition-all duration-500"
                       style={{
-                        width: `${
-                          ((statistics.completed || 0) / statistics.total_queues) * 100
-                        }%`,
+                        width: `${((statistics.completed || 0) / statistics.total_queues) * 100
+                          }%`,
                       }}
                     />
                   )}
@@ -229,9 +228,8 @@ export default function QueueManagement() {
                     <div
                       className="bg-blue-400 transition-all duration-500"
                       style={{
-                        width: `${
-                          ((statistics.in_process || 0) / statistics.total_queues) * 100
-                        }%`,
+                        width: `${((statistics.in_process || 0) / statistics.total_queues) * 100
+                          }%`,
                       }}
                     />
                   )}
@@ -240,9 +238,8 @@ export default function QueueManagement() {
                     <div
                       className="bg-red-400 transition-all duration-500"
                       style={{
-                        width: `${
-                          ((statistics.cancelled || 0) / statistics.total_queues) * 100
-                        }%`,
+                        width: `${((statistics.cancelled || 0) / statistics.total_queues) * 100
+                          }%`,
                       }}
                     />
                   )}
