@@ -257,7 +257,7 @@ export default function ServiceDetailModal({
                             Total Sparepart
                           </td>
                           <td className="px-4 py-2 text-right text-sm text-gray-700">
-                            {conversion.currency(service.total_price || 0)}
+                            {conversion.currency(service.product_fee || 0)}
                           </td>
                           {service.status === "process" && <td></td>}
                         </tr>
@@ -275,7 +275,7 @@ export default function ServiceDetailModal({
                             GRAND TOTAL
                           </td>
                           <td className="px-4 py-3 text-right font-bold text-lg">
-                            {conversion.currency((service.total_price || 0) + (service.service_fee || 0))}
+                            {conversion.currency(service.total_price || 0)}
                           </td>
                           {service.status === "process" && <td></td>}
                         </tr>

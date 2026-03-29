@@ -24,12 +24,12 @@ export default function Index() {
   const [statusFilter, setStatusFilter] = useState<string>("");
 
   const STATUS_FILTER_OPTIONS = [
-    { value: "",            label: "Semua Status" },
-    { value: "waiting",     label: "Menunggu" },
-    { value: "process",     label: "Dikerjakan" },
-    { value: "done_paid",   label: "Selesai (Lunas)" },
+    { value: "", label: "Semua Status" },
+    { value: "waiting", label: "Menunggu" },
+    { value: "process", label: "Dikerjakan" },
+    { value: "done_paid", label: "Selesai (Lunas)" },
     { value: "done_unpaid", label: "Selesai (Belum Dibayar)" },
-    { value: "cancelled",   label: "Dibatalkan" },
+    { value: "cancelled", label: "Dibatalkan" },
   ];
 
   const buildFilterParam = (key: string): ApiFilterType[] | undefined => {
@@ -129,7 +129,7 @@ export default function Index() {
         <hr class="divider"/>
         <div class="info-grid">
           <div><div class="info-label">No. Antrian</div><div class="info-val">${s.queue?.queue_number || "-"}</div></div>
-          <div><div class="info-label">Tanggal</div><div class="info-val">${new Date(s.updated_at || s.created_at).toLocaleDateString("id-ID",{day:"2-digit",month:"long",year:"numeric"})}</div></div>
+          <div><div class="info-label">Tanggal</div><div class="info-val">${new Date(s.updated_at || s.created_at).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}</div></div>
           <div><div class="info-label">Pelanggan</div><div class="info-val">${s.customer?.user?.name || s.customer_name || "-"}</div></div>
           <div><div class="info-label">Teknisi</div><div class="info-val">${s.mechanic?.user?.name || "-"}</div></div>
           <div><div class="info-label">Kendaraan</div><div class="info-val">${s.vehicle?.plate_number || "-"}</div></div>
@@ -147,9 +147,9 @@ export default function Index() {
         <hr class="divider"/>
         <table>
           <tbody>
-            <tr><td style="padding:4px 8px;color:#6b7280">Total Sparepart</td><td style="padding:4px 8px;text-align:right">${conversion.currency((s.total_price || 0))}</td></tr>
+            <tr><td style="padding:4px 8px;color:#6b7280">Total Sparepart</td><td style="padding:4px 8px;text-align:right">${conversion.currency((s.product_fee || 0))}</td></tr>
             <tr><td style="padding:4px 8px;color:#6b7280">Biaya Jasa</td><td style="padding:4px 8px;text-align:right">${conversion.currency(s.service_fee || 0)}</td></tr>
-            <tr class="total-row"><td>TOTAL</td><td style="text-align:right">${conversion.currency((s.total_price || 0) + (s.service_fee || 0))}</td></tr>
+            <tr class="total-row"><td>TOTAL</td><td style="text-align:right">${conversion.currency((s.total_price || 0))}</td></tr>
           </tbody>
         </table>
         <hr class="divider"/>
@@ -195,12 +195,12 @@ export default function Index() {
   ];
 
   const cardColor: Record<string, string> = {
-    blue:   "border-blue-400 bg-blue-50 hover:bg-blue-100 text-blue-700",
+    blue: "border-blue-400 bg-blue-50 hover:bg-blue-100 text-blue-700",
     purple: "border-purple-400 bg-purple-50 hover:bg-purple-100 text-purple-700",
     orange: "border-orange-400 bg-orange-50 hover:bg-orange-100 text-orange-700",
   };
   const iconColor: Record<string, string> = {
-    blue:   "bg-blue-100 text-blue-500",
+    blue: "bg-blue-100 text-blue-500",
     purple: "bg-purple-100 text-purple-500",
     orange: "bg-orange-100 text-orange-500",
   };
@@ -308,11 +308,11 @@ export default function Index() {
             item: (data: any) => {
               const s = data?.status;
               const p = data?.payment_status;
-              if (s === "waiting")   return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Menunggu</span>;
-              if (s === "process")   return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Dikerjakan</span>;
+              if (s === "waiting") return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Menunggu</span>;
+              if (s === "process") return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Dikerjakan</span>;
               if (s === "cancelled") return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">Dibatalkan</span>;
-              if (s === "done" && p === "paid")   return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Selesai</span>;
-              if (s === "done")       return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">Belum Dibayar</span>;
+              if (s === "done" && p === "paid") return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Selesai</span>;
+              if (s === "done") return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">Belum Dibayar</span>;
               return <span className="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">{s || "-"}</span>;
             },
           },
@@ -469,19 +469,19 @@ export default function Index() {
               rounded
             />
           ) as any,
-          (row: any) => row?.mechanic_id ? null : (
-            <ButtonComponent
-              label="Pilih Terknisi"
-              variant="outline"
-              paint="secondary"
-              onClick={() => setModal({ title: "approve", id: row?.id })}
-              icon={faUserGear}
-              size="xs"
-              rounded
-              disabled={mechanicLoading}
-            />
-          ) as any,
-          (row: any) => row?.mechanic_id ? null : (
+          // (row: any) => row?.mechanic_id ? null : (
+          //   <ButtonComponent
+          //     label="Pilih Terknisi"
+          //     variant="outline"
+          //     paint="secondary"
+          //     onClick={() => setModal({ title: "approve", id: row?.id })}
+          //     icon={faUserGear}
+          //     size="xs"
+          //     rounded
+          //     disabled={mechanicLoading}
+          //   />
+          // ) as any,
+          (row: any) => (row?.mechanic_id || row?.status == "cancelled") ? null : (
             <ButtonComponent
               label="Batalkan"
               variant="outline"
@@ -492,7 +492,7 @@ export default function Index() {
               rounded
             />
           ) as any,
-          ((row: any, setModalFn: any, setDataFn: any) => row?.mechanic_id ? null : (
+          ((row: any, setModalFn: any, setDataFn: any) => (row?.mechanic_id || row?.status == "cancelled") ? null : (
             <ButtonComponent
               label="Ubah"
               variant="outline"
@@ -537,13 +537,13 @@ export default function Index() {
           submitControl={
             modal.title == "approve"
               ? {
-                path: `services/${modal?.id}/approve`,
-                method: "PATCH",
+                path: `admin/services/${modal?.id}/approve`,
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
               }
               : {
-                path: `services/${modal?.id}/reject`,
-                method: "PATCH",
+                path: `admin/services/${modal?.id}/cancel`,
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
               }
           }
@@ -606,7 +606,7 @@ export default function Index() {
         {payModal.service && (
           <>
             {/* Parts summary */}
-            <div className="px-5 pt-4 pb-2 bg-gray-50 border-b max-h-[80vh] overflow-y-auto">
+            <div className="px-5 pt-4 pb-2 bg-gray-50 border-b max-h-[70vh] overflow-y-auto">
               <p className="text-sm text-gray-500 mb-1">
                 Kendaraan:{" "}
                 <span className="font-semibold text-gray-800">
@@ -616,79 +616,77 @@ export default function Index() {
               <p className="text-sm text-gray-500">
                 Total Sparepart (saat ini):{" "}
                 <span className="font-semibold text-gray-800">
-                  {conversion.currency(payModal.service?.total_price || 0)}
+                  {conversion.currency(payModal.service?.product_fee || 0)}
                 </span>
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-400 mt-1 mb-2">
                 * Grand total = total sparepart + biaya jasa yang Anda masukkan
               </p>
+              <FormSupervisionComponent
+                key={payModal.service?.id}
+                submitControl={{
+                  path: `admin/services/${payModal.service?.id}/complete`,
+                  method: "POST",
+                }}
+                onSuccess={() => {
+                  setPayModal({ show: false, service: null });
+                  setRefresh((r) => !r);
+                }}
+                forms={[
+                  {
+                    type: "currency",
+                    construction: {
+                      name: "service_fee",
+                      label: "Biaya Jasa",
+                      placeholder: "Masukkan biaya jasa",
+                      required: true,
+                    },
+                  },
+                  {
+                    type: "select",
+                    construction: {
+                      name: "payment_method",
+                      label: "Metode Pembayaran",
+                      required: true,
+                      options: [
+                        { label: "Tunai (Cash)", value: "cash" },
+                        { label: "Transfer Bank/QRIS", value: "transfer" },
+                      ],
+                    },
+                  },
+                  {
+                    onHide: (values) => {
+                      const method = values.find((v: any) => v.name === "payment_method")?.value;
+                      return method === "cash" || !method;
+                    },
+                    type: "image",
+                    construction: {
+                      name: "payment_proof",
+                      label: "Bukti Pembayaran",
+                    },
+                  },
+                ]}
+                footerControl={({ loading }) => (
+                  <div className="flex justify-end gap-2 mt-4">
+                    <ButtonComponent
+                      type="button"
+                      label="Batal"
+                      icon={faXmark}
+                      variant="outline"
+                      paint="danger"
+                      onClick={() => setPayModal({ show: false, service: null })}
+                    />
+                    <ButtonComponent
+                      type="submit"
+                      label="Bayar & Selesaikan"
+                      icon={faMoneyBill}
+                      loading={loading}
+                      paint="success"
+                    />
+                  </div>
+                )}
+              />
             </div>
-
-            <FormSupervisionComponent
-              key={payModal.service?.id}
-              className="p-5"
-              submitControl={{
-                path: `admin/services/${payModal.service?.id}/complete`,
-                method: "POST",
-              }}
-              onSuccess={() => {
-                setPayModal({ show: false, service: null });
-                setRefresh((r) => !r);
-              }}
-              forms={[
-                {
-                  type: "currency",
-                  construction: {
-                    name: "service_fee",
-                    label: "Biaya Jasa",
-                    placeholder: "Masukkan biaya jasa",
-                    required: true,
-                  },
-                },
-                {
-                  type: "select",
-                  construction: {
-                    name: "payment_method",
-                    label: "Metode Pembayaran",
-                    required: true,
-                    options: [
-                      { label: "Tunai (Cash)", value: "cash" },
-                      { label: "Transfer Bank/QRIS", value: "transfer" },
-                    ],
-                  },
-                },
-                {
-                  onHide: (values) => {
-                    const method = values.find((v: any) => v.name === "payment_method")?.value;
-                    return method === "cash" || !method;
-                  },
-                  type: "image",
-                  construction: {
-                    name: "payment_proof",
-                    label: "Bukti Pembayaran",
-                  },
-                },
-              ]}
-              footerControl={({ loading }) => (
-                <div className="flex justify-end gap-2 mt-4">
-                  <ButtonComponent
-                    type="button"
-                    label="Batal"
-                    icon={faXmark}
-                    variant="outline"
-                    paint="danger"
-                    onClick={() => setPayModal({ show: false, service: null })}
-                  />
-                  <ButtonComponent
-                    type="submit"
-                    label="Bayar & Selesaikan"
-                    icon={faMoneyBill}
-                    loading={loading}
-                    paint="success"
-                  />
-                </div>
-              )}
-            />
           </>
         )}
       </ModalComponent>
@@ -701,10 +699,10 @@ export default function Index() {
           addModal.step === 1
             ? "Tambah Servis — Pilih Tipe"
             : addModal.type === "walk_in"
-            ? "Tambah Servis — Tamu (Walk-in)"
-            : addModal.type === "on_behalf"
-            ? "Tambah Servis — Atas Nama Pelanggan"
-            : "Tambah Servis — Kunjungan Belum Tercatat"
+              ? "Tambah Servis — Tamu (Walk-in)"
+              : addModal.type === "on_behalf"
+                ? "Tambah Servis — Atas Nama Pelanggan"
+                : "Tambah Servis — Kunjungan Belum Tercatat"
         }
         show={addModal.show}
         onClose={closeAddModal}
