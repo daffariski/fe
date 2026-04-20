@@ -730,7 +730,7 @@ export default function Index() {
 
         {/* ── Step 2a: Walk-in form ── */}
         {addModal.step === 2 && addModal.type === "walk_in" && (
-          <>
+          <div className="max-h-[70vh] overflow-y-auto">
             <div className="flex items-center gap-2 px-5 pt-4">
               <button
                 className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1"
@@ -745,7 +745,7 @@ export default function Index() {
               className="p-5"
               submitControl={{ path: "admin/services", method: "POST" }}
               onSuccess={handleAddSuccess}
-              defaultValue={{ add_to_queue: true, status: "waiting", admin_id: user?.id }}
+              defaultValue={{ add_to_queue: 1, status: "waiting", admin_id: user?.id }}
               forms={[
                 {
                   construction: {
@@ -811,7 +811,7 @@ export default function Index() {
               ]}
               footerControl={({ loading }) => formFooter(loading)}
             />
-          </>
+          </div>
         )}
 
         {/* ── Step 2b: On-behalf — pick customer first ── */}
@@ -852,7 +852,7 @@ export default function Index() {
 
         {/* ── Step 2c: On-behalf — vehicle + description after customer picked ── */}
         {addModal.step === 2 && addModal.type === "on_behalf" && selectedCustomer && (
-          <>
+          <div className="max-h-[70vh] overflow-y-auto">
             <div className="flex items-center gap-2 px-5 pt-4">
               <button
                 className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1"
@@ -876,7 +876,7 @@ export default function Index() {
                 onSuccess={handleAddSuccess}
                 defaultValue={{
                   customer_id: selectedCustomer.id,
-                  add_to_queue: true,
+                  add_to_queue: 1,
                   status: "waiting",
                   admin_id: user?.id,
                 }}
@@ -903,12 +903,12 @@ export default function Index() {
                 footerControl={({ loading }) => formFooter(loading, () => setSelectedCustomer(null))}
               />
             )}
-          </>
+          </div>
         )}
 
         {/* ── Step 2d: Historical / unrecorded ── */}
         {addModal.step === 2 && addModal.type === "historical" && (
-          <>
+          <div className="max-h-[70vh] overflow-y-auto">
             <div className="flex items-center gap-2 px-5 pt-4">
               <button
                 className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1"
@@ -923,7 +923,7 @@ export default function Index() {
               className="p-5"
               submitControl={{ path: "admin/services", method: "POST" }}
               onSuccess={handleAddSuccess}
-              defaultValue={{ add_to_queue: false, status: "done", admin_id: user?.id }}
+              defaultValue={{ add_to_queue: 0, status: "done", admin_id: user?.id }}
               forms={[
                 {
                   construction: {
@@ -1012,7 +1012,7 @@ export default function Index() {
               ]}
               footerControl={({ loading }) => formFooter(loading)}
             />
-          </>
+          </div>
         )}
       </ModalComponent>
     </>
