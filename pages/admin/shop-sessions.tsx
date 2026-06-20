@@ -75,7 +75,7 @@ export default function ShopSessionsPage() {
                     <>
                         <CardComponent className="mb-6 p-4">
                             <h2 className="text-lg font-semibold mb-2">Statistik</h2>
-                            <p>Rata-rata pendapatan kotor per hari: <span className="font-bold text-green-700">{conversion.currency(averageRevenue || 0)}</span></p>
+                            <p>Rata-rata pendapatan kotor: <span className="font-bold text-green-700">{conversion.currency(averageRevenue || 0)}</span></p>
                         </CardComponent>
                         <div className="overflow-x-auto">
                             <table className="min-w-full bg-white border">
