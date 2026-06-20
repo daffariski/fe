@@ -1,6 +1,7 @@
 import React from "react";
 
 interface Vehicle {
+  id?: string;
   user_id: string;
   plate_number: string;
   brand: string;

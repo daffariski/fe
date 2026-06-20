@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faLocationCrosshairs } from "@fortawesome/free-solid-svg-icons";
 import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import { cn, pcn, useInputHandler, useInputRandomId, useValidation, validation } from "@utils/.";
-import { OutsideClickComponent } from "@components/.";
+import { OutsideClickComponent } from "../wrap/OutsideClick.component";
 
 
 
@@ -224,7 +224,7 @@ export function InputMapComponent({
                     mapTypeControl: false,
                     fullscreenControl: false,
                   }}
-                  onLoad={(map) => {mapRef.current = map}}
+                  onLoad={(map: google.maps.Map) => {mapRef.current = map}}
                   onDrag={() => setDrag(true)}
                   onDragEnd={handleDragEnd}
                 />

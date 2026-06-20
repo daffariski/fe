@@ -71,7 +71,7 @@ const Index = () => {
             if (data.user_id) {
                 window.location.href = `/me/${data?.user_id}`;
             }
-        } catch (error) {
+        } catch (error: any) {
             setBtnGoogleLoading(false);
             setErrorLogin(error || "Gagal masuk!");
         }

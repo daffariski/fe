@@ -2,7 +2,8 @@ import { ReactNode, useEffect, useState } from "react";
 import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { api, ApiType, cn, pcn } from "@utils/.";
-import { ToastComponent, ButtonComponent, ButtonProps } from "@components/.";
+import { ToastComponent } from "./Toast.component";
+import { ButtonComponent, ButtonProps } from "../button/Button.component";
 
 type CT = "base" | "backdrop" | "header" | "footer";
 

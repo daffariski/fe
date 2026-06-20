@@ -16,7 +16,7 @@ import { VehicleListComponent } from "@/components/construct.components";
 import { useGetApi, auth } from "@/utils";
 
 interface Vehicle {
-  id: string;
+  id?: string;
   user_id: string;
   plate_number: string;
   brand: string;
@@ -269,9 +269,9 @@ const UserProfilePage = () => {
                     },
                   },
                   {
-                    onHide: (values) => {
+                    onHide: (values: any[]) => {
                       return (
-                        values.find((val) => val.name == "type")?.value ==
+                        values.find((val: any) => val.name == "type")?.value ==
                         "new"
                       );
                     },
@@ -297,9 +297,9 @@ const UserProfilePage = () => {
                   },
 
                   {
-                    onHide: (values) => {
+                    onHide: (values: any[]) => {
                       return (
-                        values.find((val) => val.name == "type")?.value !=
+                        values.find((val: any) => val.name == "type")?.value !=
                         "new"
                       );
                     },
@@ -312,9 +312,9 @@ const UserProfilePage = () => {
                     },
                   },
                   {
-                    onHide: (values) => {
+                    onHide: (values: any[]) => {
                       return (
-                        values.find((val) => val.name == "type")?.value !=
+                        values.find((val: any) => val.name == "type")?.value !=
                         "new"
                       );
                     },
@@ -327,9 +327,9 @@ const UserProfilePage = () => {
                     },
                   },
                   {
-                    onHide: (values) => {
+                    onHide: (values: any[]) => {
                       return (
-                        values.find((val) => val.name == "type")?.value !=
+                        values.find((val: any) => val.name == "type")?.value !=
                         "new"
                       );
                     },
@@ -342,9 +342,9 @@ const UserProfilePage = () => {
                   },
 
                   {
-                    onHide: (values) => {
+                    onHide: (values: any[]) => {
                       return (
-                        values.find((val) => val.name == "type")?.value !=
+                        values.find((val: any) => val.name == "type")?.value !=
                         "new"
                       );
                     },
@@ -357,9 +357,9 @@ const UserProfilePage = () => {
                     },
                   },
                   {
-                    onHide: (values) => {
+                    onHide: (values: any[]) => {
                       return (
-                        values.find((val) => val.name == "type")?.value !=
+                        values.find((val: any) => val.name == "type")?.value !=
                         "new"
                       );
                     },

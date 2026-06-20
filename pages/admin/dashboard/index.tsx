@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import moment from "moment";
 import Layout from "../_layout";
 import {
   ButtonComponent,
   CardComponent,
 } from "@/components/base.components";
-import { conversion, useGetApi, auth } from "@/utils";
+import { conversion, useGetApi, auth, cn } from "@/utils";
 import {
   faStore,
   faStoreSlash,
@@ -41,9 +42,15 @@ export default function Index() {
     method: "GET",
   });
 
-  // Fetch revenue statistics (this week) - for future use
-  useGetApi({
-    path: "admin/dashboard/revenue?period=week",
+  const [period, setPeriod] = useState<"day" | "week" | "month" | "year">("week");
+
+  // Fetch revenue statistics
+  const {
+    loading: revenueLoading,
+    data: revenueData,
+    reset: resetRevenue,
+  } = useGetApi({
+    path: `admin/dashboard/revenue?period=${period}`,
     method: "GET",
   });
 
@@ -59,9 +66,151 @@ export default function Index() {
   useEffect(() => {
     resetShop();
     resetOverview();
+    resetRevenue();
   }, [refresh]);
 
   const handleRefresh = () => setRefresh(!refresh);
+
+  // Process revenue data for chart representation
+  const revenueDataNorm = useMemo(() => {
+    return Array.isArray(revenueData)
+      ? revenueData
+      : revenueData?.data || [];
+  }, [revenueData]);
+
+  useEffect(() => {
+    console.log("revenueDataNorm is changed: ", revenueDataNorm);
+  }, [revenueDataNorm])
+  
+  useEffect(() => {
+    console.log("revenueData is changed: ", revenueData);
+  }, [revenueData])
+
+  const processedRevenue = useMemo(() => {
+    if (period === "day") {
+      const todayRevenue = !Array.isArray(revenueData) ? (revenueData?.data[0] || revenueData || {}) : {};
+      const total = Number(todayRevenue?.total || 0);
+      const count = Number(todayRevenue?.count || 0);
+      return {
+        total,
+        count,
+        avg: count > 0 ? total / count : 0,
+        chartItems: [
+          {
+            label: "Hari Ini",
+            shortLabel: "Hari Ini",
+            total,
+            count,
+          }
+        ]
+      };
+    }
+
+    if (period === "week") {
+      const DAY_NAMES = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
+      const startOfWeek = moment().startOf('isoWeek');
+      let grandTotal = 0;
+      let grandCount = 0;
+
+      const chartItems = Array.from({ length: 7 }).map((_, i) => {
+        const dayMoment = startOfWeek.clone().add(i, 'days');
+        const dateStr = dayMoment.format('YYYY-MM-DD');
+        const apiMatch = revenueDataNorm.find(
+          (item: any) => moment(item.date).format('YYYY-MM-DD') === dateStr
+        );
+        const total = apiMatch ? Number(apiMatch.total || 0) : 0;
+        const count = apiMatch ? Number(apiMatch.count || 0) : 0;
+        grandTotal += total;
+        grandCount += count;
+
+        return {
+          label: DAY_NAMES[i],
+          shortLabel: DAY_NAMES[i].substring(0, 3),
+          date: dateStr,
+          total,
+          count,
+        };
+      });
+
+      return {
+        total: grandTotal,
+        count: grandCount,
+        avg: grandCount > 0 ? grandTotal / grandCount : 0,
+        chartItems,
+      };
+    }
+
+    if (period === "month") {
+      const startOfMonth = moment().startOf('month');
+      const daysInMonth = moment().daysInMonth();
+      let grandTotal = 0;
+      let grandCount = 0;
+
+      const chartItems = Array.from({ length: daysInMonth }).map((_, i) => {
+        const dayMoment = startOfMonth.clone().add(i, 'days');
+        const dateStr = dayMoment.format('YYYY-MM-DD');
+        const apiMatch = revenueDataNorm.find(
+          (item: any) => moment(item.date).format('YYYY-MM-DD') === dateStr
+        );
+        const total = apiMatch ? Number(apiMatch.total || 0) : 0;
+        const count = apiMatch ? Number(apiMatch.count || 0) : 0;
+        grandTotal += total;
+        grandCount += count;
+
+        return {
+          label: dayMoment.format('D MMM'),
+          shortLabel: dayMoment.format('D'),
+          date: dateStr,
+          total,
+          count,
+        };
+      });
+
+      return {
+        total: grandTotal,
+        count: grandCount,
+        avg: grandCount > 0 ? grandTotal / grandCount : 0,
+        chartItems,
+      };
+    }
+
+    if (period === "year") {
+      const MONTH_NAMES = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+      const SHORT_MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
+      let grandTotal = 0;
+      let grandCount = 0;
+
+      const chartItems = Array.from({ length: 12 }).map((_, i) => {
+        const monthNum = i + 1;
+        const apiMatch = revenueDataNorm.find(
+          (item: any) => Number(item.month) === monthNum
+        );
+        const total = apiMatch ? Number(apiMatch.total || 0) : 0;
+        const count = apiMatch ? Number(apiMatch.count || 0) : 0;
+        grandTotal += total;
+        grandCount += count;
+
+        return {
+          label: MONTH_NAMES[i],
+          shortLabel: SHORT_MONTH_NAMES[i],
+          total,
+          count,
+        };
+      });
+
+      return {
+        total: grandTotal,
+        count: grandCount,
+        avg: grandCount > 0 ? grandTotal / grandCount : 0,
+        chartItems,
+      };
+    }
+
+    return { total: 0, count: 0, avg: 0, chartItems: [] };
+  }, [period, revenueData, revenueDataNorm]);
 
   // Normalize data - handle both array and object responses
   const shopStatusData = Array.isArray(shopData) ? shopData[0] : shopData?.data?.[0] || {};
@@ -73,10 +222,8 @@ export default function Index() {
   const shopSession = shopStatusData?.session || {};
 
   const today = overviewDataNorm?.today || {};
-  const thisWeek = overviewDataNorm?.this_week || {};
   const quickStats = overviewDataNorm?.quick_stats || {};
   const queueInfo = overviewDataNorm?.queue || {};
-  const mechanics = mechanicsArray;
 
   // Handle open shop
   const handleOpenShop = async () => {
@@ -279,6 +426,168 @@ export default function Index() {
           </div>
         </div>
 
+        {/* Gross Profit Statistics Widget */}
+        <div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <h2 className="text-xl font-semibold">Analisis Pendapatan Kotor</h2>
+
+            {/* Period selector */}
+            <div className="flex bg-gray-100 p-1 rounded-lg border border-gray-200 w-full sm:w-auto">
+              {(["day", "week", "month", "year"] as const).map((p) => {
+                const label =
+                  p === "day" ? "Hari Ini" :
+                    p === "week" ? "Minggu" :
+                      p === "month" ? "Bulan" : "Tahun";
+                return (
+                  <button
+                    key={p}
+                    onClick={() => setPeriod(p)}
+                    className={cn(
+                      "flex-1 sm:flex-initial px-4 py-1.5 text-xs font-semibold rounded-md transition-all duration-200",
+                      period === p
+                        ? "bg-white text-primary shadow-sm"
+                        : "text-gray-600 hover:text-primary hover:bg-white/50"
+                    )}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Summary cards */}
+            <div className="flex flex-col gap-4 lg:col-span-1">
+              <CardComponent className="p-4 flex items-center justify-between border-l-4 border-l-primary shadow-sm hover:shadow transition-shadow">
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">Total Pendapatan</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">
+                    {revenueLoading ? "..." : conversion.currency(processedRevenue.total)}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <FontAwesomeIcon icon={faDollarSign} />
+                </div>
+              </CardComponent>
+
+              <CardComponent className="p-4 flex items-center justify-between border-l-4 border-l-green-500 shadow-sm hover:shadow transition-shadow">
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">Jumlah Transaksi</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">
+                    {revenueLoading ? "..." : `${processedRevenue.count} Servis`}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                  <FontAwesomeIcon icon={faCheckCircle} />
+                </div>
+              </CardComponent>
+
+              <CardComponent className="p-4 flex items-center justify-between border-l-4 border-l-blue-500 shadow-sm hover:shadow transition-shadow">
+                <div>
+                  <p className="text-xs text-gray-500 font-semibold">Rata-rata Nilai Servis</p>
+                  <p className="text-2xl font-bold text-gray-800 mt-1">
+                    {revenueLoading ? "..." : conversion.currency(processedRevenue.avg)}
+                  </p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                  <FontAwesomeIcon icon={faWrench} />
+                </div>
+              </CardComponent>
+            </div>
+
+            {/* Visual representation */}
+            <CardComponent className="p-6 lg:col-span-2 flex flex-col justify-between shadow-sm min-h-[300px]">
+              {revenueLoading ? (
+                <div className="flex-1 flex flex-col items-center justify-center gap-2 py-12">
+                  <div className="animate-spin text-primary text-3xl">
+                    <FontAwesomeIcon icon={faSpinner} />
+                  </div>
+                  <p className="text-sm text-gray-500">Memuat statistik...</p>
+                </div>
+              ) : period === "day" ? (
+                // Today Summary circle progress / visual gauge
+                <div className="flex-1 flex flex-col items-center justify-center py-6">
+                  <div className="relative w-36 h-36 flex items-center justify-center rounded-full border-8 border-gray-100 shadow-inner">
+                    <div className="absolute inset-0 rounded-full border-8 border-primary/25"></div>
+                    <div className="text-center z-10">
+                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Hari Ini</p>
+                      <p className="text-xl font-extrabold text-primary mt-1">
+                        {conversion.currency(processedRevenue.total)}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">{processedRevenue.count} transaksi</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-4 text-center max-w-[280px]">
+                    Menampilkan total pendapatan kotor dari semua servis yang telah diselesaikan hari ini.
+                  </p>
+                </div>
+              ) : (
+                // Bar Chart representation
+                <div className="flex-1 flex flex-col justify-between h-full pt-4">
+                  {/* Y-Axis guide lines */}
+                  <div className="flex-1 relative flex items-end w-full h-[180px] border-b border-gray-200">
+                    <div className="absolute inset-x-0 top-0 border-t border-dashed border-gray-100"></div>
+                    <div className="absolute inset-x-0 top-1/3 border-t border-dashed border-gray-100"></div>
+                    <div className="absolute inset-x-0 top-2/3 border-t border-dashed border-gray-100"></div>
+
+                    {/* Bars */}
+                    <div className="absolute inset-0 flex items-end justify-between px-2 gap-1 overflow-x-auto scroll select-none">
+                      {processedRevenue.chartItems.map((item: any, idx: number) => {
+                        const maxVal = Math.max(...processedRevenue.chartItems.map((i: any) => i.total), 1);
+                        const percentHeight = (item.total / maxVal) * 100;
+                        return (
+                          <div
+                            key={idx}
+                            className="group relative flex-1 flex flex-col items-center min-w-[24px] max-w-[45px] h-full justify-end cursor-pointer"
+                          >
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full mb-2 hidden group-hover:flex flex-col items-center z-20 pointer-events-none transition-all duration-200 animate-intro-up">
+                              <div className="bg-gray-800 text-white text-2xs md:text-xs rounded py-1 px-2 shadow-lg whitespace-nowrap text-center">
+                                <p className="font-bold">{item.label}</p>
+                                <p className="text-green-400 mt-0.5">{conversion.currency(item.total)}</p>
+                                <p className="text-gray-400 text-3xs">{item.count} Servis</p>
+                              </div>
+                              {/* Triangle arrow */}
+                              <div className="w-2 h-2 bg-gray-800 rotate-45 -mt-1"></div>
+                            </div>
+
+                            {/* Bar Graphic */}
+                            <div className="w-full bg-gray-50 rounded-t-sm h-full flex items-end">
+                              <div
+                                style={{ height: `${percentHeight}%` }}
+                                className={cn(
+                                  "w-full rounded-t-sm transition-all duration-500 ease-out origin-bottom",
+                                  item.total > 0
+                                    ? "bg-gradient-to-t from-primary/80 to-primary group-hover:from-primary group-hover:to-primary-dark"
+                                    : "bg-gray-200"
+                                )}
+                              ></div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* X-Axis labels */}
+                  <div className="flex justify-between items-center mt-2 px-2 text-[10px] text-gray-500 select-none">
+                    {processedRevenue.chartItems.map((item: any, idx: number) => {
+                      const isMonth = period === "month";
+                      const shouldShow = !isMonth || idx === 0 || idx === 4 || idx === 9 || idx === 14 || idx === 19 || idx === 24 || idx === processedRevenue.chartItems.length - 1;
+                      return (
+                        <div key={idx} className="flex-1 text-center font-semibold truncate" style={{ opacity: shouldShow ? 1 : 0 }}>
+                          {item.shortLabel}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </CardComponent>
+          </div>
+        </div>
+
         {/* Queue Overview */}
         <div>
           <h2 className="text-xl font-semibold mb-4">Info Antrian</h2>
@@ -386,40 +695,7 @@ export default function Index() {
           </div>
         </div>
 
-        {/* This Week */}
-        {thisWeek && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Minggu Ini</h2>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <CardComponent className="p-4">
-                <p className="text-sm text-gray-600">Total Servis</p>
-                <p className="text-2xl font-bold">
-                  {overviewLoading ? "-" : (thisWeek.services_completed || 0) + (thisWeek.services_cancelled || 0)}
-                </p>
-              </CardComponent>
-              <CardComponent className="p-4">
-                <p className="text-sm text-gray-600">Selesai</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {overviewLoading ? "-" : thisWeek.services_completed || 0}
-                </p>
-              </CardComponent>
-              <CardComponent className="p-4">
-                <p className="text-sm text-gray-600">Dibatalkan</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {overviewLoading ? "-" : thisWeek.services_cancelled || 0}
-                </p>
-              </CardComponent>
-              <CardComponent className="p-4">
-                <p className="text-sm text-gray-600">Total Pendapatan</p>
-                <p className="text-xl font-bold text-green-600">
-                  {overviewLoading
-                    ? "-"
-                    : conversion.currency(thisWeek.gross_revenue || 0)}
-                </p>
-              </CardComponent>
-            </div>
-          </div>
-        )}
+
 
         {/* Mechanic Performance */}
         {/* {mechanics.length > 0 && (

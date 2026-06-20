@@ -360,9 +360,9 @@ export default function Index() {
               },
             },
             {
-              onHide: (values) => {
+              onHide: (values: any[]) => {
                 return (
-                  values.find((val) => val.name == "type")?.value == "general"
+                  values.find((val: any) => val.name == "type")?.value == "general"
                 );
               },
               type: "select",
@@ -384,9 +384,9 @@ export default function Index() {
               },
             },
             {
-              onHide: (values) => {
+              onHide: (values: any[]) => {
                 return (
-                  values.find((val) => val.name == "type")?.value != "general"
+                  values.find((val: any) => val.name == "type")?.value != "general"
                 );
               },
               col: 6,
@@ -398,9 +398,9 @@ export default function Index() {
               },
             },
             {
-              onHide: (values) => {
+              onHide: (values: any[]) => {
                 return (
-                  values.find((val) => val.name == "type")?.value != "general"
+                  values.find((val: any) => val.name == "type")?.value != "general"
                 );
               },
               col: 6,
@@ -412,9 +412,9 @@ export default function Index() {
               },
             },
             {
-              onHide: (values) => {
+              onHide: (values: any[]) => {
                 return (
-                  values.find((val) => val.name == "type")?.value != "general"
+                  values.find((val: any) => val.name == "type")?.value != "general"
                 );
               },
               construction: {
@@ -426,9 +426,9 @@ export default function Index() {
             },
 
             {
-              onHide: (values) => {
+              onHide: (values: any[]) => {
                 return (
-                  values.find((val) => val.name == "type")?.value != "general"
+                  values.find((val: any) => val.name == "type")?.value != "general"
                 );
               },
               type: "number",
@@ -440,9 +440,9 @@ export default function Index() {
               },
             },
             {
-              onHide: (values) => {
+              onHide: (values: any[]) => {
                 return (
-                  values.find((val) => val.name == "type")?.value != "general"
+                  values.find((val: any) => val.name == "type")?.value != "general"
                 );
               },
               construction: {

@@ -1,8 +1,12 @@
 import React, { ReactNode } from 'react'
 import { faEyeLowVision, faMagnifyingGlass, faRefresh } from '@fortawesome/free-solid-svg-icons';
 import { useToggleContext } from '@/contexts/Toggle.context';
-import { cn } from '@utils/.';
-import { IconButtonComponent, InputCheckboxComponent, InputComponent, SelectComponent, OutsideClickComponent } from '@components';
+import { cn } from "@utils/.";
+import { IconButtonComponent } from "../button/IconButton.component";
+import { InputCheckboxComponent } from "../input/InputCheckbox.component";
+import { InputComponent } from "../input/Input.component";
+import { SelectComponent } from "../input/Select.component";
+import { OutsideClickComponent } from "../wrap/OutsideClick.component";
 
 
 

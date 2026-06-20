@@ -6,7 +6,9 @@ import {
   faCheckCircle,
   faClipboardList,
 } from "@fortawesome/free-solid-svg-icons";
-import { CardComponent, InputComponent, PaginationComponent } from "@/components/base.components";
+import { CardComponent } from "@/components/base.components/card/Card.component";
+import { InputComponent } from "@/components/base.components/input/Input.component";
+import { PaginationComponent } from "@/components/base.components/table/Pagination.component";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";

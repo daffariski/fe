@@ -4,7 +4,9 @@ import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDownZA, faArrowUpAZ, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { cn, pcn, useLazySearch } from "@utils/.";
-import { ControlBarComponent, ControlBarOptionType, PaginationComponent, PaginationProps, ScrollContainerComponent } from "@components/.";
+import { ControlBarComponent, ControlBarOptionType } from "./ControlBar.component";
+import { PaginationComponent, PaginationProps } from "./Pagination.component";
+import { ScrollContainerComponent } from "../wrap/ScrollContainer.component";
 
 
 

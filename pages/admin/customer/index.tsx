@@ -101,6 +101,15 @@ export default function Index() {
           },
           {
             construction: {
+              type: "textarea",
+              name: "address",
+              label: "Alamat",
+              placeholder: "Alamat pelanggan...",
+              required: true,
+            },
+          },
+          {
+            construction: {
               type: "password",
               name: "password",
               label: "Password",

@@ -62,7 +62,8 @@ export default function Index() {
           label: "Pemilik",
           sortable: true,
           width: "200px",
-          item: (item) => item.user?.name || "-",
+          // item: (item) => item.user?.name || "-",
+          item: (item) => item.owner_name || "-",
         },
         {
           selector: "plate_number",

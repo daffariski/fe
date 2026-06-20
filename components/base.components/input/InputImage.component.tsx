@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera, faHandHolding, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { cn, pcn, useInputHandler, useInputRandomId, useValidation, validation } from "@utils/.";
-import { IconButtonComponent } from "@components/.";
+import { IconButtonComponent } from "../button/IconButton.component";
 
 
 

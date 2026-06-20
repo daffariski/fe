@@ -2,7 +2,9 @@ import React, { InputHTMLAttributes, ReactNode, useEffect, useState } from "reac
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faClock } from "@fortawesome/free-solid-svg-icons";
 import { cn, pcn, useInputHandler, useInputRandomId, useValidation, validation } from "@utils/.";
-import { OutsideClickComponent, InputDatePickerComponent, InputTimePickerComponent } from "@components/.";
+import { OutsideClickComponent } from "../wrap/OutsideClick.component";
+import { InputDatePickerComponent } from "./InputDate.component";
+import { InputTimePickerComponent } from "./InputTime.component";
 
 
 

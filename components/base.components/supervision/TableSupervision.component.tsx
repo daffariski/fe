@@ -3,7 +3,12 @@ import { useRouter } from "next/router";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { ApiType, useGetApi, useResponsive } from "@utils/.";
-import { FloatingPageComponent, FloatingPageProps, ButtonComponent, IconButtonComponent, TableColumnType, TableComponent, FormSupervisionComponent, FormType, ModalConfirmComponent } from "@components/.";
+import { FloatingPageComponent, FloatingPageProps } from "../modal/FloatingPage.component";
+import { ButtonComponent } from "../button/Button.component";
+import { IconButtonComponent } from "../button/IconButton.component";
+import { TableColumnType, TableComponent } from "../table/Table.component";
+import { FormSupervisionComponent, FormType } from "./FormSupervision.component";
+import { ModalConfirmComponent } from "../modal/ModalConfirm.component";
 
 export interface TableSupervisionColumnProps {
   selector: string;

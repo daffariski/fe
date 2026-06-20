@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { api, ApiType, cn, pcn, useInputHandler, useValidation, validation } from "@utils/.";
-import { CheckboxComponent } from "@components/.";
+import { CheckboxComponent } from "./Checkbox.component";
 
 
 
@@ -137,7 +137,7 @@ export function InputCheckboxComponent({
           })}
 
           {(options || dataOptions) && (options || dataOptions)?.map((option, key) => {
-            const checked = Array().concat(inputHandler.value).find((val) => val == option.value);
+            const checked = Array().concat(inputHandler.value).find((val: any) => val == option.value);
 
             return (
               <CheckboxComponent

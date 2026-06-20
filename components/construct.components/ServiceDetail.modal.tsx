@@ -44,7 +44,7 @@ export default function ServiceDetailModal({
       path: `admin/services/${serviceId}`,
       method: "GET",
     },
-    show && serviceId
+    show && Boolean(serviceId)
   );
 
   // Fetch product options
@@ -114,7 +114,7 @@ export default function ServiceDetailModal({
         title={`Detail Servis - ${service.customer?.user?.name || service.customer_name || "..."}`}
         show={show}
         onClose={onClose}
-        size="large">
+        className="base::md:w-[80vw] base::max-w-6xl">
         <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
           {serviceLoading ? (
             <div className="flex justify-center py-8">
@@ -431,7 +431,6 @@ export default function ServiceDetailModal({
           submitControl={{
             path: `admin/services/${serviceId}/complete`,
             method: "POST",
-            contentType: "multipart/form-data",
           }}
           onSuccess={() => {
             setModal({ type: "" });
@@ -457,19 +456,16 @@ export default function ServiceDetailModal({
               },
             },
             {
-              type: "file",
+              type: "image",
               onHide: (values) => {
                 const paymentMethod = values.find(
-                  (v) => v.name === "payment_method"
+                  (v: any) => v.name === "payment_method"
                 )?.value;
                 return paymentMethod === "cash";
               },
               construction: {
                 name: "payment_proof",
                 label: "Bukti Pembayaran (opsional untuk cash)",
-                placeholder: "Upload bukti pembayaran...",
-                accept: "image/*,.pdf",
-                required: false,
               },
             },
           ]}

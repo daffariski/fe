@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "barrels": "bun run utils/commands/barrels.ts",
-    "dev": "concurrently --raw \"bun run barrels\" \"next dev --turbopack\"",
+    "dev": "next dev",
+    "dev:pwa": "NEXT_PUBLIC_PWA_DEV=true next dev",
+    "dev:turbo": "next dev --turbopack",
+    "dev:barrels": "concurrently --raw \"bun run barrels\" \"next dev\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -24,6 +27,7 @@
     "js-cookie": "^3.0.5",
     "moment": "^2.30.1",
     "next": "15.1.4",
+    "next-pwa": "^5.6.0",
     "postcss": "^8.5.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -34,17 +38,19 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@tailwindcss/oxide-linux-x64-gnu": "^4.0.0",
     "@types/crypto-js": "^4.2.2",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/validator": "^13.15.4",
+    "barrelsby": "^2.8.1",
+    "concurrently": "^9.2.1",
     "eslint": "^9.19.0",
     "eslint-config-next": "^15.1.6",
     "eslint-config-prettier": "^10.0.1",
-    "typescript": "^5",
-    "barrelsby": "^2.8.1",
-    "concurrently": "^9.2.1"
+    "lightningcss-linux-x64-gnu": "^1.31.1",
+    "typescript": "^5"
   }
 }
